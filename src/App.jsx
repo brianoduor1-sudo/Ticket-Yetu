@@ -11,7 +11,19 @@ function App() {
 
   return (
     <>
-      
+      {/*
+        This renders our category filter buttons.
+
+        "onSelect" is a function we're handing to CategoriesSection.
+        Every time someone clicks a button that actually filters
+        something (like "Music" or "FKF Premier League"), that
+        component calls this function and passes us back whatever
+        was selected.
+
+        Right now we're just logging it to the browser console, so
+        we can SEE that it's working, later this same value will be
+        used to actually filter the real events list.
+      */}
       <CategoriesSection onSelect={(category) => console.log("Selected:", category)} />
 
       {/* Original Vite starter content, commented out, uncomment if needed later
