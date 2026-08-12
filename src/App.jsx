@@ -1,141 +1,128 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import React from "react";
+import { useEventFilters } from "./utilities/useEventFilters";
 
-import CategoriesSection from './components/CategoriesSection'
+// TEMPORARY sample data — swap out once events are fetched from the
+// real backend. Shape matches the confirmed event object.
+const SAMPLE_EVENTS = [
+  {
+    id: "music-005",
+    name: "Sauti Sol Reunion Concert",
+    category: "Music",
+    date: "2026-10-10",
+    location: "KICC Grounds, Nairobi",
+    price: 2500,
+  },
+  {
+    id: "sports-002",
+    name: "FKF Premier League: Gor Mahia vs AFC Leopards",
+    category: "FKF Premier League",
+    date: "2026-10-10",
+    location: "Nyayo Stadium, Nairobi",
+    price: 500,
+  },
+  {
+    id: "comedy-011",
+    name: "Churchill Show Live",
+    category: "Comedy",
+    date: "2026-10-15",
+    location: "Carnivore Grounds, Nairobi",
+    price: 1000,
+  },
+];
 
-function App() {
-  const [count, setCount] = useState(0)
+
+export default function App() {
+
+  const {
+    filteredEvents,
+    searchTerm,
+    setSearchTerm,
+    category,
+    setCategory,
+    location,
+    setLocation,
+    minPrice,
+    maxPrice,
+    setPriceRange,
+  } = useEventFilters(SAMPLE_EVENTS);
 
   return (
-    <>
-      {/*
-        This renders our category filter buttons.
+    <div className="min-h-screen bg-gray-100 p-8">
+      <h1 className="mb-6 text-center text-2xl font-bold text-gray-900">
+        Search & Filtering — Test
+      </h1>
 
-        "onSelect" is a function we're handing to CategoriesSection.
-        Every time someone clicks a button that actually filters
-        something (like "Music" or "FKF Premier League"), that
-        component calls this function and passes us back whatever
-        was selected.
-
-        Right now we're just logging it to the browser console, so
-        we can SEE that it's working, later this same value will be
-        used to actually filter the real events list.
-      */}
-      <CategoriesSection onSelect={(category) => console.log("Selected:", category)} />
-
-      {/* Original Vite starter content, commented out, uncomment if needed later
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+      <div className="mx-auto flex max-w-2xl flex-wrap items-end gap-4 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+        <div className="flex flex-col gap-1">
+          <label className="text-xs font-medium text-gray-500">Search</label>
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="e.g. Music"
+            className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm outline-none focus:border-violet-500"
+          />
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+        <div className="flex flex-col gap-1">
+          <label className="text-xs font-medium text-gray-500">Category</label>
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm outline-none focus:border-violet-500"
+          >
+            <option>All</option>
+            <option>Music</option>
+            <option>Comedy</option>
+            <option>FKF Premier League</option>
+          </select>
         </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-      */}
-    </>
-  )
+        <div className="flex flex-col gap-1">
+          <label className="text-xs font-medium text-gray-500">Location</label>
+          <input
+            type="text"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            placeholder="e.g. Nairobi"
+            className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm outline-none focus:border-violet-500"
+          />
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <label className="text-xs font-medium text-gray-500">Max price</label>
+          <input
+            type="number"
+            value={maxPrice ?? ""}
+            onChange={(e) =>
+              setPriceRange(minPrice, e.target.value ? Number(e.target.value) : null)
+            }
+            placeholder="No limit"
+            className="w-28 rounded-lg border border-gray-300 px-3 py-1.5 text-sm outline-none focus:border-violet-500"
+          />
+        </div>
+      </div>
+
+      <ul className="mx-auto mt-6 max-w-2xl space-y-3">
+        {filteredEvents.length === 0 ? (
+          <p className="text-center text-sm text-gray-400">No events match.</p>
+        ) : (
+          filteredEvents.map((event) => (
+            <li
+              key={event.id}
+              className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
+            >
+              <p className="font-semibold text-gray-900">{event.name}</p>
+              <p className="text-sm text-gray-500">
+                {event.category} · {event.location} · {event.date}
+              </p>
+              <p className="text-sm font-medium text-violet-600">
+                KES {event.price}
+              </p>
+            </li>
+          ))
+        )}
+      </ul>
+    </div>
+  );
 }
-
-export default App
