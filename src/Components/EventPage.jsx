@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-
+import { getEvents } from "../Api/ticketmaster";
 const events = [
   {
     id: "kpl-001",

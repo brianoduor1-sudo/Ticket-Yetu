@@ -1,34 +1,37 @@
 import axios from "axios";
 
-const api = axios.create({
-  baseURL: "https://v3.football.api-sports.io",
-  headers: {
-    "x-apisports-key": import.meta.env.VITE_API_FOOTBALL_KEY,
+export const footballEvents = [
+  {
+    id: 1,
+    name: "Gor Mahia vs AFC Leopards",
+    category: "FKF Premier League",
+    date: "2026-09-20",
+    time: "15:00",
+    location: "Nyayo Stadium, Nairobi",
+    venue: "Nyayo National Stadium",
+    organiser: "FKF Premier League",
+    price: 500,
+    availableTickets: 1200,
+    description:
+      "Experience the biggest football derby in Kenya as Gor Mahia face AFC Leopards in a thrilling FKF Premier League showdown.",
+    image:
+      "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=1200&q=80",
   },
-});
 
-// FKF Premier League fixtures
-export const getKPLFixtures = async () => {
-  const res = await api.get("/fixtures", {
-    params: {
-      league: 273, // replace with actual Kenya league id
-      season: 2026,
-      next: 10,
-    },
-  });
-
-  return res.data.response;
-};
-
-// National Super League fixtures
-export const getNSLFixtures = async () => {
-  const res = await api.get("/fixtures", {
-    params: {
-      league: 274, // replace with actual NSL league id
-      season: 2026,
-      next: 10,
-    },
-  });
-
-  return res.data.response;
-};
+  {
+    id: 2,
+    name: "Nairobi United vs APS Bomet",
+    category: "National Super League",
+    date: "2026-09-22",
+    time: "14:00",
+    location: "Kasarani Annex, Nairobi",
+    venue: "Kasarani Annex Stadium",
+    organiser: "NSL Kenya",
+    price: 300,
+    availableTickets: 900,
+    description:
+      "Catch the National Super League action live as Nairobi United host APS Bomet in a crucial league encounter.",
+    image:
+      "https://images.unsplash.com/photo-1560272564-c83b66b1ad12?auto=format&fit=crop&w=1200&q=80",
+  },
+];
