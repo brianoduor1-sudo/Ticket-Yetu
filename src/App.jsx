@@ -4,11 +4,17 @@ import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import './App.css'
 
+import CategoriesSection from './components/CategoriesSection'
+
 function App() {
   const [count, setCount] = useState(0)
 
   return (
     <>
+      
+      <CategoriesSection onSelect={(category) => console.log("Selected:", category)} />
+
+      {/* Original Vite starter content, commented out, uncomment if needed later
       <section id="center">
         <div className="hero">
           <img src={heroImg} className="base" width="170" height="179" alt="" />
@@ -115,6 +121,7 @@ function App() {
 
       <div className="ticks"></div>
       <section id="spacer"></section>
+      */}
     </>
   )
 }
