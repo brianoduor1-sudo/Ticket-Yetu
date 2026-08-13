@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { getGroupNames, getSpecificCategories } from "../utils/categoryGroups";
+import { getGroupNames, getSpecificCategories } from "../utilities/categoryGroups";
 
 // ============================================================
 // WHAT THIS COMPONENT DOES, IN PLAIN WORDS:
