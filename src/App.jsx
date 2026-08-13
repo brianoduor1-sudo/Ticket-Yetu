@@ -1,122 +1,131 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useState } from "react";
+import { useAuth } from "./context/AuthContext";
+import { logout } from "./services/authService";
+
+import Register from "./pages/Register";
+import Login from "./pages/Login";
+import OrganiserRequest from "./pages/OrganiserRequest";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const { user, profile, loading } = useAuth();
+
+  const [page, setPage] = useState("home");
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  // =========================
+  // LOGGED OUT
+  // =========================
+
+  if (!user) {
+    return (
+      <div>
+        <h1>EventHub</h1>
+
+        <p>Discover. Book. Attend.</p>
+
+        <hr />
+
+        <button onClick={() => setPage("home")}>
+          Home
+        </button>
+
+        <button onClick={() => setPage("login")}>
+          Login
+        </button>
+
+        <button onClick={() => setPage("register")}>
+          Create Account
+        </button>
+
+        <hr />
+
+        {page === "home" && (
+          <div>
+            <h2>Welcome to EventHub</h2>
+
+            <p>
+              Discover events, book tickets and manage
+              your event participation.
+            </p>
+
+            <button onClick={() => setPage("login")}>
+              Login
+            </button>
+
+            <button onClick={() => setPage("register")}>
+              Create Account
+            </button>
+          </div>
+        )}
+
+        {page === "login" && (
+          <Login />
+        )}
+
+        {page === "register" && (
+          <Register
+            onLogin={() => setPage("login")}
+          />
+        )}
+      </div>
+    );
+  }
+
+  // =========================
+  // LOGGED IN
+  // =========================
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
+    <div>
+      <h1>EventHub</h1>
+
+      <p>Discover. Book. Attend.</p>
+
+      <hr />
+
+      <button onClick={() => setPage("home")}>
+        Home
+      </button>
+
+      <button onClick={() => setPage("organiser")}>
+        Become an Organiser
+      </button>
+
+      <button onClick={logout}>
+        Logout
+      </button>
+
+      <hr />
+
+      {page === "home" && (
         <div>
-          <h1>Get started</h1>
+          <h2>
+            Welcome, {profile?.name || user.email}
+          </h2>
+
           <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
+            <strong>Email:</strong> {user.email}
+          </p>
+
+          <p>
+            <strong>Role:</strong> {profile?.role}
+          </p>
+
+          <p>
+            <strong>Organiser Status:</strong>{" "}
+            {profile?.organiserStatus}
           </p>
         </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+      )}
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      {page === "organiser" && (
+        <OrganiserRequest />
+      )}
+    </div>
+  );
 }
 
-export default App
+export default App;
