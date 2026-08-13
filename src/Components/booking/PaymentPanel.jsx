@@ -5,6 +5,16 @@ import { paymentService } from '../../services/paymentService';
 // gateway yet. `onSuccess({ method, reference })` fires once payment
 // "clears"; the parent (BookingForm) is responsible for actually
 // creating the booking at that point.
+export function PaymentPanel({ amount, currency, onSuccess, onCancel }) {
+  const [method, setMethod] = useState('mpesa');
+  const [phone, setPhone] = useState('');
+  const [cardNumber, setCardNumber] = useState('');
+  const [expiry, setExpiry] = useState('');
+  const [cvc, setCvc] = useState('');
+  const [devOutcome, setDevOutcome] = useState('success'); // demo-only toggle
+  const [status, setStatus] = useState('idle'); // idle | pending | error
+  const [error, setError] = useState('');
+
 
 export function PaymentPanel({ amount, currency, onSuccess, onCancel }) {
   const [method, setMethod ] = useState('mpesa');
@@ -22,6 +32,13 @@ export function PaymentPanel({ amount, currency, onSuccess, onCancel }) {
     setStatus('pending');
     setError('');
 
+    const result = method === 'mpesa'
+      ? await paymentService.payWithMpesa({ phone, amount, outcome: devOutcome })
+      : await paymentService.payWithCard({ cardNumber, expiry, cvc, amount, outcome: devOutcome });
+
+    if (result.success) {
+      onSuccess({ method: result.method, reference: result.reference });
+    } else {
 
     const result= method === 'mpesa'
     ? await paymentService.payWithMpesa({ phone, amount, outcome: devOutcome })
@@ -36,6 +53,17 @@ export function PaymentPanel({ amount, currency, onSuccess, onCancel }) {
     }
   }
 
+  if (status === 'pending') {
+    return (
+      <div className="booking-card" style={{ textAlign: 'center' }}>
+        <div className="pulse-dot" />
+        <h3 style={{ marginTop: 18 }}>
+          {method === 'mpesa' ? 'Check your phone' : 'Processing payment'}
+        </h3>
+        <p style={{ color: 'var(--text-dim)', fontSize: 13.5, marginTop: 8 }}>
+          {method === 'mpesa'
+            ? `Enter your M-Pesa PIN to confirm ${currency} ${amount.toLocaleString()}.`
+            : 'Confirming your card details with the bank…'}
   if(status === 'pending') {
     return (
       <div className='booking-card' style={{ textAlign: 'center'}}>
@@ -52,6 +80,15 @@ export function PaymentPanel({ amount, currency, onSuccess, onCancel }) {
     );
   }
 
+  return (
+    <form className="booking-card" onSubmit={handlePay}>
+      <h3>Checkout</h3>
+
+      <div style={{ display: 'flex', gap: 4, marginBottom: 18, background: 'var(--surface-2)', padding: 4, borderRadius: 10 }}>
+        <button type="button" className={`chip ${method === 'mpesa' ? 'active' : ''}`} style={{ flex: 1, border: 'none' }} onClick={() => setMethod('mpesa')}>
+          M-Pesa
+        </button>
+        <button type="button" className={`chip ${method === 'card' ? 'active' : ''}`} style={{ flex: 1, border: 'none' }} onClick={() => setMethod('card')}>
 
   return (
     <form className='booking-card' onSubmit={handlePay}>

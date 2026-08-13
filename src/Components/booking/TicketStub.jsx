@@ -19,3 +19,4 @@ export function TicketStub({ booking, event }) {
     </Link>
   );
 }
+}
