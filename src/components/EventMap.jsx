@@ -12,7 +12,6 @@ L.Icon.Default.mergeOptions({
 });
 
 // ============================================================
-
 //
 // Used on the Event Details page. Shows a small map with a pin at
 // the event's saved location, plus a "Get Directions" button that
