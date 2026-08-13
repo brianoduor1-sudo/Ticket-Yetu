@@ -1,125 +1,72 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
-import HeroSection from './components/HeroSection'
+import { useState } from "react";
+import EventLocationPin from "./components/EventLocationPin";
+import EventMap from "./components/EventMap";
+import LocationPicker from "./components/LocationPicker";
 
-function App() {
-  const [count, setCount] = useState(0)
+// Sample event location — swap for a real event's saved location
+// once wired to actual data.
+const SAMPLE_LOCATION = {
+  address: "KICC Grounds, Nairobi",
+  lat: -1.2897,
+  lng: 36.8217,
+};
+
+// This branch only has EventMap.jsx, LocationPicker.jsx, and
+// EventLocationPin.jsx — no CategoriesSection, FilterBar, or
+// Calendar yet (those are on other branches). This App.jsx proves
+// two flows on their own:
+//
+// 1. Event Details view: EventLocationPin (top) -> click -> scrolls
+//    down to EventMap (bottom), which shares the same #event-location
+//    id the pin links to.
+// 2. Create Event view: LocationPicker lets you click the map to
+//    drop a pin, and shows the { address, lat, lng } it produces.
+export default function App() {
+  const [newLocation, setNewLocation] = useState({ address: "", lat: null, lng: null });
 
   return (
-    <>
-      <HeroSection onSearch={(query) => console.log("Searching for:", query)} />
+    <div className="min-h-screen bg-gray-100 p-8">
+      <h1 className="mb-8 text-center text-2xl font-bold text-gray-900">
+        Location & Map — Test
+      </h1>
 
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+      {/* ---- Flow 1: Event Details page ---- */}
+      <section className="mx-auto max-w-2xl rounded-2xl bg-white p-6 shadow-sm">
+        <h2 className="text-lg font-bold text-gray-900">
+          Sauti Sol Reunion Concert
+        </h2>
+        <p className="mt-1 text-sm text-gray-500">Oct 10, 2026 · 7:00 PM</p>
+
+        {/* The clickable pin — click it and the page should smooth-
+            scroll down to the map below. */}
+        <div className="mt-2">
+          <EventLocationPin location={SAMPLE_LOCATION} />
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
+
+        <p className="mt-4 text-sm text-gray-600">
+          A night of reunion hits at KICC Grounds.
+        </p>
       </section>
 
-      <div className="ticks"></div>
+      {/* id has to match EventLocationPin's href="#event-location"
+          exactly — EventMap already sets this on its own <section>. */}
+      <div className="mx-auto max-w-2xl">
+        <EventMap location={SAMPLE_LOCATION} />
+      </div>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
+      {/* ---- Flow 2: Create Event form (location step only) ---- */}
+      <section className="mx-auto mt-12 max-w-2xl rounded-2xl bg-white p-6 shadow-sm">
+        <h2 className="mb-4 text-lg font-bold text-gray-900">
+          Create Event — Location Step
+        </h2>
+        <LocationPicker value={newLocation} onChange={setNewLocation} />
+
+        {/* Just for visibility while testing — shows exactly what
+            LocationPicker is sending up via onChange. */}
+        <pre className="mt-4 rounded-lg bg-gray-50 p-3 text-xs text-gray-500">
+          {JSON.stringify(newLocation, null, 2)}
+        </pre>
       </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+    </div>
+  );
 }
-
-export default App
