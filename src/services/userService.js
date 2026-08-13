@@ -3,31 +3,41 @@ import {
   getDoc,
   setDoc,
   updateDoc,
-  addDoc,
-  collection,
+  onSnapshot,
   serverTimestamp,
 } from "firebase/firestore";
 
 import { db } from "../firebase/firebase";
 
-export const createUserProfile = async (user, name = "") => {
-  const userRef = doc(db, "users", user.uid);
+const USERS_COLLECTION = "users";
 
-  const existingProfile = await getDoc(userRef);
+export const createUserProfile = async (
+  user,
+  name = ""
+) => {
+  if (!user) {
+    throw new Error("Firebase user is required.");
+  }
 
-  if (existingProfile.exists()) {
-    return {
-      id: existingProfile.id,
-      ...existingProfile.data(),
-    };
+  const userRef = doc(
+    db,
+    USERS_COLLECTION,
+    user.uid
+  );
+
+  const existingUser = await getDoc(userRef);
+
+  if (existingUser.exists()) {
+    return existingUser.data();
   }
 
   const profile = {
+    uid: user.uid,
     name: name || user.displayName || "",
     email: user.email || "",
+    photoURL: user.photoURL || "",
     role: "attendee",
     organiserStatus: "none",
-    photoURL: user.photoURL || "",
     createdAt: serverTimestamp(),
   };
 
@@ -36,8 +46,16 @@ export const createUserProfile = async (user, name = "") => {
   return profile;
 };
 
-export const getUserProfile = async (userId) => {
-  const userRef = doc(db, "users", userId);
+export const getUserProfile = async (uid) => {
+  if (!uid) {
+    return null;
+  }
+
+  const userRef = doc(
+    db,
+    USERS_COLLECTION,
+    uid
+  );
 
   const snapshot = await getDoc(userRef);
 
@@ -45,46 +63,81 @@ export const getUserProfile = async (userId) => {
     return null;
   }
 
-  return {
-    id: snapshot.id,
-    ...snapshot.data(),
-  };
+  return snapshot.data();
 };
 
 export const updateUserProfile = async (
-  userId,
+  uid,
   updates
 ) => {
-  const userRef = doc(db, "users", userId);
+  if (!uid) {
+    throw new Error("User ID is required.");
+  }
+
+  const userRef = doc(
+    db,
+    USERS_COLLECTION,
+    uid
+  );
 
   await updateDoc(userRef, updates);
 };
 
-export const requestOrganiserAccess = async (user) => {
-  if (!user || !user.uid) {
-    throw new Error("No authenticated user found.");
+export const requestOrganiserRole = async (
+  uid
+) => {
+  if (!uid) {
+    throw new Error("User ID is required.");
   }
 
-  // Update the user's Firestore profile
-  const userRef = doc(db, "users", user.uid);
+  const userRef = doc(
+    db,
+    USERS_COLLECTION,
+    uid
+  );
 
   await updateDoc(userRef, {
     organiserStatus: "pending",
   });
+};
 
-  // Create organiser request
-  const requestRef = await addDoc(
-    collection(db, "organiserRequests"),
-    {
-      userId: user.uid,
-      name: user.displayName || "",
-      email: user.email || "",
-      status: "pending",
-      createdAt: serverTimestamp(),
-      reviewedAt: null,
-      reviewedBy: null,
-    }
+/*
+  Listen for changes to the user's Firestore
+  profile in real time.
+*/
+export const subscribeToUserProfile = (
+  uid,
+  callback,
+  onError
+) => {
+  if (!uid) {
+    return () => {};
+  }
+
+  const userRef = doc(
+    db,
+    USERS_COLLECTION,
+    uid
   );
 
-  return requestRef.id;
+  return onSnapshot(
+    userRef,
+    (snapshot) => {
+      if (snapshot.exists()) {
+        callback(snapshot.data());
+      } else {
+        callback(null);
+      }
+    },
+    (error) => {
+      console.error(
+        "User profile listener error:",
+        error
+      );
+
+      if (onError) {
+        onError(error);
+      }
+    }
+  );
 };

@@ -2,58 +2,63 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signInWithPopup,
-  signOut,
   GoogleAuthProvider,
-  updateProfile,
+  signOut,
+  onAuthStateChanged,
 } from "firebase/auth";
 
 import { auth } from "../firebase/firebase";
 
-const googleProvider = new GoogleAuthProvider();
+const googleProvider =
+  new GoogleAuthProvider();
 
-export const registerWithEmail = async (
-  name,
+export const registerUser = async (
   email,
   password
 ) => {
-  const userCredential =
+  const result =
     await createUserWithEmailAndPassword(
       auth,
       email,
       password
     );
 
-  await updateProfile(userCredential.user, {
-    displayName: name,
-  });
-
-  return userCredential.user;
+  return result.user;
 };
 
-export const loginWithEmail = async (
+export const loginUser = async (
   email,
   password
 ) => {
-  const userCredential =
+  const result =
     await signInWithEmailAndPassword(
       auth,
       email,
       password
     );
 
-  return userCredential.user;
+  return result.user;
 };
 
 export const loginWithGoogle = async () => {
-  const userCredential =
+  const result =
     await signInWithPopup(
       auth,
       googleProvider
     );
 
-  return userCredential.user;
+  return result.user;
 };
 
-export const logout = async () => {
+export const logoutUser = async () => {
   await signOut(auth);
+};
+
+export const subscribeToAuthChanges = (
+  callback
+) => {
+  return onAuthStateChanged(
+    auth,
+    callback
+  );
 };

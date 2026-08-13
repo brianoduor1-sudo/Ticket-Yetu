@@ -5,94 +5,143 @@ import {
   useState,
 } from "react";
 
-import { onAuthStateChanged } from "firebase/auth";
-
-import { auth } from "../firebase/firebase";
+import {
+  subscribeToAuthChanges,
+} from "../services/authService";
 
 import {
   createUserProfile,
-  getUserProfile,
+  subscribeToUserProfile,
 } from "../services/userService";
 
-const AuthContext = createContext();
+const AuthContext = createContext(null);
 
-export const AuthProvider = ({ children }) => {
+export function AuthProvider({
+  children,
+}) {
   const [user, setUser] = useState(null);
+
   const [profile, setProfile] = useState(null);
+
   const [loading, setLoading] = useState(true);
 
-  const refreshProfile = async (userId) => {
-    try {
-      const updatedProfile =
-        await getUserProfile(userId);
-
-      setProfile(updatedProfile);
-
-      return updatedProfile;
-    } catch (error) {
-      console.error(
-        "Failed to refresh profile:",
-        error
-      );
-
-      throw error;
-    }
-  };
-
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(
-      auth,
-      async (firebaseUser) => {
-        try {
-          if (!firebaseUser) {
-            setUser(null);
+    let unsubscribeProfile = null;
+
+    const unsubscribeAuth =
+      subscribeToAuthChanges(
+        async (firebaseUser) => {
+          try {
+            setLoading(true);
+
+            // User logged out
+            if (!firebaseUser) {
+              setUser(null);
+              setProfile(null);
+
+              if (unsubscribeProfile) {
+                unsubscribeProfile();
+                unsubscribeProfile = null;
+              }
+
+              setLoading(false);
+              return;
+            }
+
+            // User logged in
+            setUser(firebaseUser);
+
+            /*
+              Make sure a Firestore profile exists.
+            */
+            const createdProfile =
+              await createUserProfile(
+                firebaseUser
+              );
+
+            setProfile(createdProfile);
+
+            /*
+              Listen to the Firestore user document
+              in real time.
+            */
+            if (unsubscribeProfile) {
+              unsubscribeProfile();
+            }
+
+            unsubscribeProfile =
+              subscribeToUserProfile(
+                firebaseUser.uid,
+                (updatedProfile) => {
+                  setProfile(
+                    updatedProfile
+                  );
+                  setLoading(false);
+                },
+                () => {
+                  setLoading(false);
+                }
+              );
+          } catch (error) {
+            console.error(
+              "Authentication error:",
+              error
+            );
+
             setProfile(null);
             setLoading(false);
-            return;
           }
-
-          setUser(firebaseUser);
-
-          let userProfile =
-            await getUserProfile(firebaseUser.uid);
-
-          if (!userProfile) {
-            userProfile =
-              await createUserProfile(firebaseUser);
-          }
-
-          setProfile(userProfile);
-        } catch (error) {
-          console.error(
-            "Authentication error:",
-            error
-          );
-
-          setUser(null);
-          setProfile(null);
-        } finally {
-          setLoading(false);
         }
-      }
-    );
+      );
 
-    return unsubscribe;
+    return () => {
+      unsubscribeAuth();
+
+      if (unsubscribeProfile) {
+        unsubscribeProfile();
+      }
+    };
   }, []);
 
+  const value = {
+    user,
+
+    profile,
+
+    loading,
+
+    isAuthenticated: Boolean(user),
+
+    isAttendee:
+      profile?.role === "attendee",
+
+    isOrganiser:
+      profile?.role === "organiser" &&
+      profile?.organiserStatus ===
+        "approved",
+
+    organiserPending:
+      profile?.organiserStatus ===
+      "pending",
+  };
+
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        profile,
-        loading,
-        refreshProfile,
-      }}
-    >
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
-};
+}
 
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
+export function useAuth() {
+  const context = useContext(
+    AuthContext
+  );
+
+  if (!context) {
+    throw new Error(
+      "useAuth must be used inside AuthProvider."
+    );
+  }
+
+  return context;
+}
