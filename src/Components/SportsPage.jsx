@@ -4,7 +4,7 @@ const sportsEvents = [
   {
     id: "kpl-001",
     image:
-      "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=1200&q=80",
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQrQ3KIITc4Z04TX_calNmA0EeHQPbBkpcHfHo5iEWXXg&s=10",
     name: "Gor Mahia vs AFC Leopards",
     date: "2026-09-20",
     time: "15:00",
@@ -15,8 +15,7 @@ const sportsEvents = [
   },
   {
     id: "rugby-003",
-    image:
-      "https://images.unsplash.com/photo-1526232761682-d26e03ac148e?auto=format&fit=crop&w=1200&q=80",
+    image: "https://scrummage.co.ke/2023/09/12/kenya-7s-squad-named/",
     name: "Kenya Rugby Sevens Invitational",
     date: "2026-09-27",
     time: "10:00",
@@ -28,7 +27,7 @@ const sportsEvents = [
   {
     id: "basket-004",
     image:
-      "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&w=1200&q=80",
+      "https://www.google.com/imgres?q=%22Nairobi%20City%20Thunder%20vs%20Ulinzi%20Warriors%22&imgurl=https%3A%2F%2Flookaside.fbsbx.com%2Flookaside%2Fcrawler%2Fmedia%2F%3Fmedia_id%3D1587196855982302&imgrefurl=https%3A%2F%2Fwww.facebook.com%2F254citythunder%2Fphotos%2Fnairobi-city-thunder-vs-ulinzi-warriorspreseason-friendly-games-are-about-rhythm%2F1587196855982302%2F&docid=iaCJHFM_IY1zDM&tbnid=9O-qrOyPOM2LAM&vet=12ahUKEwj2y8vH9ZyWAxVD1AIHHTYiIy4QnPAOegQIQhAA..i&w=1080&h=1080&hcb=2&ved=2ahUKEwj2y8vH9ZyWAxVD1AIHHTYiIy4QnPAOegQIQhAA",
     name: "Nairobi City Thunder vs Ulinzi Warriors",
     date: "2026-09-29",
     time: "18:00",

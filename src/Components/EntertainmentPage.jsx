@@ -4,7 +4,7 @@ const entertainmentEvents = [
   {
     id: "music-005",
     image:
-      "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1200&q=80",
+      "https://nation.africa/kenya/news/why-sauti-sol-are-right-in-clash-with-azimio-over-extravaganza--3821250",
     name: "Sauti Sol Reunion Concert",
     date: "2026-10-10",
     time: "19:00",
@@ -16,7 +16,7 @@ const entertainmentEvents = [
   {
     id: "festival-006",
     image:
-      "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1200&q=80",
+      "https://www.google.com/imgres?q=Nairobi%20Afrobeat%20Festival&imgurl=https%3A%2F%2Flookaside.fbsbx.com%2Flookaside%2Fcrawler%2Fmedia%2F%3Fmedia_id%3D1580321246844110%26get_thumbnail%3D1&imgrefurl=https%3A%2F%2Fwww.facebook.com%2Fafricanbeatsfestival%2Fposts%2Fjoin-one-of-this-summers-most-exciting-music-and-travel-festivals-the-african-be%2F1552251376690908%2F&docid=XDlCcvn7e3ydzM&tbnid=tQB_GXYOSdL0xM&vet=12ahUKEwjYibff9pyWAxWpV6QEHXA_FyQQnPAOegQIIxAA..i&w=1080&h=1920&hcb=2&itg=1&ved=2ahUKEwjYibff9pyWAxWpV6QEHXA_FyQQnPAOegQIIxAA",
     name: "Nairobi Afrobeat Festival",
     date: "2026-10-18",
     time: "14:00",
@@ -28,7 +28,7 @@ const entertainmentEvents = [
   {
     id: "comedy-007",
     image:
-      "https://images.unsplash.com/photo-1527224538127-2104bb71c51b?auto=format&fit=crop&w=1200&q=80",
+      "https://i.ytimg.com/vi/YlhLKrzBc80/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLC4pr0BUXvfomNoPUJIKKVHo92_vA",
     name: "Churchill Comedy Night",
     date: "2026-11-01",
     time: "19:30",
