@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./Login.css";
+import { Link } from "react-router-dom";
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -68,7 +69,7 @@ function Login() {
           <div className="login-footer">
             <a href="/forgot-password">Forgot password?</a>
             <span className="divider">|</span>
-            <a href="/register">Create an account</a>
+            <Link to="/signup">Create an account</Link>
           </div>
         </form>
       </div>
