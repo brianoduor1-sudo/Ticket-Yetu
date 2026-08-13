@@ -1,7 +1,34 @@
-import { useState } from "react";
-import EventLocationPin from "./components/EventLocationPin";
-import EventMap from "./components/EventMap";
-import LocationPicker from "./components/LocationPicker";
+import React from "react";
+import { useEventFilters } from "./utilities/useEventFilters";
+
+// TEMPORARY sample data — swap out once events are fetched from the
+// real backend. Shape matches the confirmed event object.
+const SAMPLE_EVENTS = [
+  {
+    id: "music-005",
+    name: "Sauti Sol Reunion Concert",
+    category: "Music",
+    date: "2026-10-10",
+    location: "KICC Grounds, Nairobi",
+    price: 2500,
+  },
+  {
+    id: "sports-002",
+    name: "FKF Premier League: Gor Mahia vs AFC Leopards",
+    category: "FKF Premier League",
+    date: "2026-10-10",
+    location: "Nyayo Stadium, Nairobi",
+    price: 500,
+  },
+  {
+    id: "comedy-011",
+    name: "Churchill Show Live",
+    category: "Comedy",
+    date: "2026-10-15",
+    location: "Carnivore Grounds, Nairobi",
+    price: 1000,
+  },
+];
 
 import CategoriesSection from './components/CategoriesSection'
 import EventCalendar from './components/EventCalendar'
@@ -26,18 +53,20 @@ const SAMPLE_EVENTS = [
   },
 ];
 
-// This branch only has EventMap.jsx, LocationPicker.jsx, and
-// EventLocationPin.jsx — no CategoriesSection, FilterBar, or
-// Calendar yet (those are on other branches). This App.jsx proves
-// two flows on their own:
-//
-// 1. Event Details view: EventLocationPin (top) -> click -> scrolls
-//    down to EventMap (bottom), which shares the same #event-location
-//    id the pin links to.
-// 2. Create Event view: LocationPicker lets you click the map to
-//    drop a pin, and shows the { address, lat, lng } it produces.
 export default function App() {
-  const [newLocation, setNewLocation] = useState({ address: "", lat: null, lng: null });
+
+  const {
+    filteredEvents,
+    searchTerm,
+    setSearchTerm,
+    category,
+    setCategory,
+    location,
+    setLocation,
+    minPrice,
+    maxPrice,
+    setPriceRange,
+  } = useEventFilters(SAMPLE_EVENTS);
 
   return (
     <>
