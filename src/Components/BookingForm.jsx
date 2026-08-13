@@ -9,7 +9,6 @@ import {
 
 import {
   getTicketInventory,
-  updateTicketInventory,
 } from "../services/ticketInventoryService";
 
 import {
@@ -19,6 +18,7 @@ import {
 import {
   createTicket,
 } from "../services/ticketService";
+
 
 function BookingForm({
   event,
@@ -51,6 +51,7 @@ function BookingForm({
       async () => {
         try {
           setLoading(true);
+          setError("");
 
           const data =
             await getTicketInventory(
@@ -60,7 +61,7 @@ function BookingForm({
           setInventory(data);
         } catch (error) {
           console.error(
-            "Failed to load ticket inventory:",
+            "Ticket inventory error:",
             error
           );
 
@@ -77,13 +78,6 @@ function BookingForm({
     }
   }, [event?.id]);
 
-  const price =
-    inventory?.ticketPrice ??
-    event?.price ??
-    0;
-
-  const total =
-    quantity * price;
 
   const handleBooking =
     async () => {
@@ -105,7 +99,7 @@ function BookingForm({
 
       if (!inventory) {
         setError(
-          "Ticket inventory is not available."
+          "Tickets are not available for this event."
         );
 
         return;
@@ -124,37 +118,50 @@ function BookingForm({
 
       try {
         setBooking(true);
+
         setError("");
+
         setMessage("");
 
-        await updateTicketInventory(
-          event.id,
-          quantity
-        );
-
+        /*
+          createBooking() reserves the tickets
+          before creating the booking.
+        */
         const newBooking =
           await createBooking({
             userId: user.uid,
+
             eventId: event.id,
+
             quantity,
-            ticketPrice: price,
+
+            ticketPrice:
+              inventory.ticketPrice,
           });
 
+
+        /*
+          Create one ticket for every
+          ticket purchased.
+        */
         for (
-          let i = 0;
-          i < quantity;
-          i++
+          let index = 0;
+          index < quantity;
+          index++
         ) {
           await createTicket({
             bookingId:
               newBooking.id,
+
             userId: user.uid,
+
             eventId: event.id,
           });
         }
 
+
         setMessage(
-          "Booking confirmed successfully."
+          "Booking confirmed! Your ticket(s) have been created."
         );
 
         const updatedInventory =
@@ -167,6 +174,7 @@ function BookingForm({
         );
 
         setQuantity(1);
+
       } catch (error) {
         console.error(
           "Booking failed:",
@@ -177,20 +185,67 @@ function BookingForm({
           error.message ||
             "Booking failed."
         );
+
       } finally {
         setBooking(false);
       }
     };
 
+
   if (loading) {
     return (
-      <section>
+      <section className="booking-form">
         <p>
-          Loading ticket availability...
+          Checking ticket availability...
         </p>
       </section>
     );
   }
+
+
+  /*
+    The event exists but nobody has
+    configured tickets for it.
+  */
+  if (!inventory) {
+    return (
+      <section className="booking-form">
+
+        <h2>
+          Tickets
+        </h2>
+
+        <p>
+          Tickets are not currently
+          available for this event.
+        </p>
+
+      </section>
+    );
+  }
+
+
+  /*
+    Tickets exist but are sold out.
+  */
+  if (
+    inventory.availableTickets <= 0
+  ) {
+    return (
+      <section className="booking-form">
+
+        <h2>
+          Tickets
+        </h2>
+
+        <p>
+          Sold Out
+        </p>
+
+      </section>
+    );
+  }
+
 
   return (
     <section className="booking-form">
@@ -199,11 +254,13 @@ function BookingForm({
         Book Tickets
       </h2>
 
+
       {error && (
         <p>
           {error}
         </p>
       )}
+
 
       {message && (
         <p>
@@ -211,25 +268,34 @@ function BookingForm({
         </p>
       )}
 
+
       <p>
-        Price per ticket:
+        Ticket price:
         {" "}
         <strong>
-          KSh {price}
+          KSh{" "}
+          {inventory.ticketPrice}
         </strong>
       </p>
 
+
       <p>
-        Available tickets:
+        Available:
         {" "}
         <strong>
-          {inventory?.availableTickets ??
-            0}
+          {inventory.availableTickets}
         </strong>
       </p>
 
-      {isAuthenticated ? (
+
+      {!isAuthenticated ? (
+        <p>
+          Please log in to book
+          tickets.
+        </p>
+      ) : (
         <>
+
           <label htmlFor="ticket-quantity">
             Number of tickets
           </label>
@@ -244,17 +310,13 @@ function BookingForm({
                 )
               )
             }
-            disabled={
-              booking ||
-              !inventory?.availableTickets
-            }
+            disabled={booking}
           >
             {Array.from(
               {
                 length: Math.min(
                   5,
-                  inventory?.availableTickets ||
-                    0
+                  inventory.availableTickets
                 ),
               },
               (_, index) =>
@@ -269,29 +331,31 @@ function BookingForm({
             ))}
           </select>
 
-          <h3>
-            Total: KSh {total}
-          </h3>
+
+          <p>
+            Total:
+            {" "}
+            <strong>
+              KSh{" "}
+              {quantity *
+                inventory.ticketPrice}
+            </strong>
+          </p>
+
 
           <button
             type="button"
             onClick={
               handleBooking
             }
-            disabled={
-              booking ||
-              !inventory?.availableTickets
-            }
+            disabled={booking}
           >
             {booking
               ? "Processing..."
               : "Buy Ticket"}
           </button>
+
         </>
-      ) : (
-        <p>
-          Please log in to book tickets.
-        </p>
       )}
 
     </section>

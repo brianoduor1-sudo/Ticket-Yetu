@@ -15,6 +15,8 @@ import Header from "./Components/Header";
 import EventCard from "./Components/EventCard";
 import SportsCard from "./Components/SportsCard";
 import BookingForm from "./Components/BookingForm";
+import MyTickets from "./Components/MyTickets";
+import OrganiserTickets from "./Components/OrganiserTickets";
 
 import {
   useAuth,
@@ -710,20 +712,6 @@ function OrganiserRequest() {
 }
 
 
-function MyTickets() {
-  return (
-    <main>
-      <h1>
-        My Tickets
-      </h1>
-
-      <p>
-        Your tickets will be loaded
-        from Firestore here.
-      </p>
-    </main>
-  );
-}
 
 
 function About() {
@@ -789,6 +777,13 @@ function App() {
           path="/organiser"
           element={
             <OrganiserRequest />
+          }
+        />
+
+        <Route
+          path="/organiser/tickets"
+          element={
+            <OrganiserTickets />
           }
         />
 

@@ -94,9 +94,15 @@ function Header() {
 
               {/* Approved organiser */}
               {isOrganiser && (
-                <Link to="/organiser">
-                  Organiser Dashboard
-                </Link>
+                <>
+                  <Link to="/organiser">
+                    Organiser Dashboard
+                  </Link>
+
+                  <Link to="/organiser/tickets">
+                    Manage Tickets
+                  </Link>
+                </>
               )}
 
               <span>
