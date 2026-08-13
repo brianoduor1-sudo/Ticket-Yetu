@@ -30,6 +30,28 @@ const SAMPLE_EVENTS = [
   },
 ];
 
+import CategoriesSection from './components/CategoriesSection'
+import EventCalendar from './components/EventCalendar'
+
+// Temporary sample events, just so we can SEE the calendar working.
+// Real events will come from Brian's data later.
+const SAMPLE_EVENTS = [
+  {
+    id: 1,
+    name: "Gor Mahia vs AFC Leopards",
+    date: "2026-08-20",
+  },
+  {
+    id: 2,
+    name: "Sauti Sol Reunion Concert",
+    date: "2026-08-20", // same day as above, on purpose, to test multiple events per day
+  },
+  {
+    id: 3,
+    name: "Rugby Sevens Showcase",
+    date: "2026-08-22",
+  },
+];
 
 export default function App() {
 
@@ -47,82 +69,37 @@ export default function App() {
   } = useEventFilters(SAMPLE_EVENTS);
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <h1 className="mb-6 text-center text-2xl font-bold text-gray-900">
-        Search & Filtering — Test
-      </h1>
+    <>
+      <CategoriesSection onSelect={(category) => console.log("Selected:", category)} />
 
-      <div className="mx-auto flex max-w-2xl flex-wrap items-end gap-4 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
-        <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-gray-500">Search</label>
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="e.g. Music"
-            className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm outline-none focus:border-violet-500"
-          />
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-gray-500">Category</label>
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm outline-none focus:border-violet-500"
-          >
-            <option>All</option>
-            <option>Music</option>
-            <option>Comedy</option>
-            <option>FKF Premier League</option>
-          </select>
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-gray-500">Location</label>
-          <input
-            type="text"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            placeholder="e.g. Nairobi"
-            className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm outline-none focus:border-violet-500"
-          />
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-gray-500">Max price</label>
-          <input
-            type="number"
-            value={maxPrice ?? ""}
-            onChange={(e) =>
-              setPriceRange(minPrice, e.target.value ? Number(e.target.value) : null)
-            }
-            placeholder="No limit"
-            className="w-28 rounded-lg border border-gray-300 px-3 py-1.5 text-sm outline-none focus:border-violet-500"
-          />
-        </div>
+      <div style={{ padding: "40px 20px" }}>
+        <EventCalendar
+          events={SAMPLE_EVENTS}
+          onSelectEvent={(event) => console.log("Clicked event:", event)}
+        />
       </div>
 
-      <ul className="mx-auto mt-6 max-w-2xl space-y-3">
-        {filteredEvents.length === 0 ? (
-          <p className="text-center text-sm text-gray-400">No events match.</p>
-        ) : (
-          filteredEvents.map((event) => (
-            <li
-              key={event.id}
-              className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
-            >
-              <p className="font-semibold text-gray-900">{event.name}</p>
-              <p className="text-sm text-gray-500">
-                {event.category} · {event.location} · {event.date}
-              </p>
-              <p className="text-sm font-medium text-violet-600">
-                KES {event.price}
-              </p>
-            </li>
-          ))
-        )}
-      </ul>
+      {/* Original Vite starter content, commented out, uncomment if needed later
+      <section id="center">
+        ...
+      */}
+    </>
+  )
+}
+
+      {/* ---- Flow 2: Create Event form (location step only) ---- */}
+      <section className="mx-auto mt-12 max-w-2xl rounded-2xl bg-white p-6 shadow-sm">
+        <h2 className="mb-4 text-lg font-bold text-gray-900">
+          Create Event — Location Step
+        </h2>
+        <LocationPicker value={newLocation} onChange={setNewLocation} />
+
+        {/* Just for visibility while testing — shows exactly what
+            LocationPicker is sending up via onChange. */}
+        <pre className="mt-4 rounded-lg bg-gray-50 p-3 text-xs text-gray-500">
+          {JSON.stringify(newLocation, null, 2)}
+        </pre>
+      </section>
     </div>
   );
 }
