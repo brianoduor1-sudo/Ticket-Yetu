@@ -1,0 +1,21 @@
+:root {
+  --bg: #0f0e17;
+  --surface: #1b1930;
+  --surface-2: #221f3d;
+  --amber: #ffb84d;
+  --amber-dim: #7a5a2c;
+  --teal: #29d3c6;
+  --text: #f2f0fa;
+  --text-dim: #a9a4c4;
+  --line: #332f52;
+  --danger: #ff6b6b;
+
+  --font-display: 'Bricolage Grotesque', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --bg-image-opacity: 0.22;
+}
