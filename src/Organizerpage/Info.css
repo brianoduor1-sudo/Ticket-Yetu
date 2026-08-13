@@ -1,0 +1,40 @@
+.info-hero {
+  background: linear-gradient(135deg, #6d28d9, #7c3aed);
+  padding: 60px 40px;
+  border-radius: 12px;
+  color: white;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+
+.info-hero:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(109, 40, 217, 0.4);
+  background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+}
+
+.info-badge {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.info-title {
+  font-size: 42px;
+  font-weight: 800;
+  line-height: 1.15;
+  margin: 0 0 20px 0;
+}
+
+.info-description {
+  font-size: 16px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 500px;
+  margin: 0;
+}

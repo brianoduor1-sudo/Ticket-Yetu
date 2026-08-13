@@ -1,0 +1,146 @@
+.footer {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr 1.3fr 1.6fr;
+    gap: 50px;
+    transition: transform 0.2s ease;
+    padding: 50px 32px;
+
+    background-color: #ffffff;
+    color: #172554;
+}
+
+.footer:hover {
+    transform: translateY(-5px);
+}
+
+
+.footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.footer-logo h2 {
+    margin: 0;
+    color: #6d28d9;
+    font-size: 25px;
+}
+
+.logo-icon {
+    font-size: 18px;
+}
+
+.footer-brand > p {
+    max-width: 180px;
+    line-height: 1.45;
+    color: #334155;
+    font-size: 15px;
+}
+
+.footer-brand .copyright {
+    margin-top: 28px;
+}
+
+
+/* Footer columns */
+
+.footer-column {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.footer-column h3,
+.footer-subscribe h3 {
+    margin: 0 0 10px;
+    font-size: 16px;
+    color: #172554;
+}
+
+
+/* Links */
+
+.footer-column a {
+    text-decoration: none;
+    color: #575569;
+    font-size: 16px;
+
+    transition: color 0.2s ease;
+}
+
+
+/* Hover effect */
+
+.footer-column a:hover {
+    color: #7c3aed;
+}
+
+
+/* Subscribe section */
+
+.footer-subscribe p {
+    max-width: 260px;
+    color: #575569;
+    line-height: 1.45;
+    font-size: 15px;
+}
+
+
+/* Email input */
+
+.email-box {
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+    max-width: 243px;
+
+    border: 1px solid #c4b5fd;
+    border-radius: 6px;
+
+    padding: 0 10px;
+}
+
+.email-box input {
+    flex: 1;
+
+    border: none;
+    outline: none;
+
+    padding: 13px 5px;
+
+    font-size: 15px;
+}
+
+.email-box span {
+    color: #94a3b8;
+}
+
+
+/* Subscribe button */
+
+.subscribe-btn {
+    width: 100%;
+    max-width: 243px;
+
+    margin-top: 23px;
+
+    padding: 11px;
+
+    border: none;
+    border-radius: 5px;
+
+    background-color: #7c3aed;
+    color: white;
+
+    font-size: 14px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: background-color 0.2s ease;
+}
+
+.subscribe-btn:hover {
+    background-color: #6d28d9;
+}

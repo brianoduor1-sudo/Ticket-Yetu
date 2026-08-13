@@ -15,6 +15,18 @@ export function PaymentPanel({ amount, currency, onSuccess, onCancel }) {
   const [status, setStatus] = useState('idle'); // idle | pending | error
   const [error, setError] = useState('');
 
+
+export function PaymentPanel({ amount, currency, onSuccess, onCancel }) {
+  const [method, setMethod ] = useState('mpesa');
+  const [phone, setPhone] = useState('');
+  const [cardNumber, setCardNumber] = useState('');
+  const [ expiry, setExpiry] = useState('');
+  const [csv, setCvc] = useState('');
+  const [devOutcome, setDevOutcome] = useState('success');
+  const [status, setStatus] = useState('idle');
+  const [error, setError] = useState('');
+
+
   async function handlePay(e) {
     e.preventDefault();
     setStatus('pending');
@@ -27,6 +39,15 @@ export function PaymentPanel({ amount, currency, onSuccess, onCancel }) {
     if (result.success) {
       onSuccess({ method: result.method, reference: result.reference });
     } else {
+
+    const result= method === 'mpesa'
+    ? await paymentService.payWithMpesa({ phone, amount, outcome: devOutcome })
+    : await paymentService.payWithCard({ cardNumber, expiry, cvc, amount, outcome: devOutcome});
+
+    if( result.success) {
+      onSuccesss({ method: result.method, reference: result.reference});
+
+    } else { 
       setStatus('error');
       setError(result.error);
     }
@@ -43,6 +64,17 @@ export function PaymentPanel({ amount, currency, onSuccess, onCancel }) {
           {method === 'mpesa'
             ? `Enter your M-Pesa PIN to confirm ${currency} ${amount.toLocaleString()}.`
             : 'Confirming your card details with the bank…'}
+  if(status === 'pending') {
+    return (
+      <div className='booking-card' style={{ textAlign: 'center'}}>
+        <div className='pulse-dot'/>
+        <h3 style={{ marginTop: 18}}>
+          {method === 'mpesa' ? 'Check your Phone': 'Processing payment'}
+        </h3>
+        <p style={{ color: 'var(--text-dim)', fontsize: 13.5, marginTop: 8}}>
+          {method ==='mpesa'
+          ? `Enter your Mpesa pin to confirm ${currency} ${amount.toLocalString()}`
+          : `Confirming your card details with the bank...`}
         </p>
       </div>
     );
@@ -57,6 +89,16 @@ export function PaymentPanel({ amount, currency, onSuccess, onCancel }) {
           M-Pesa
         </button>
         <button type="button" className={`chip ${method === 'card' ? 'active' : ''}`} style={{ flex: 1, border: 'none' }} onClick={() => setMethod('card')}>
+
+  return (
+    <form className='booking-card' onSubmit={handlePay}>
+      <h3>Checkout</h3>
+
+      <div style={{ display: 'flex', gap: 4, marginBottom: 18, background: 'var(--surface-2)', padding: 4, borderRadius: 10 }}>
+        <button type="button" className={`chip ${method === 'mpesa' ? 'active' : ''}`} style={{ flex: 1, border:'none' }} onClick={() => setMethod('mpesa')}>
+          M-Pesa
+        </button>
+        <button type="button" className={`chip ${method === "card" ? 'active': ''}`} style={{ flex: 1, border: 'none'}} onClick={() => setMehtod('card')}>
           Card
         </button>
       </div>
