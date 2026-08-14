@@ -1,70 +1,114 @@
 import { Link } from "react-router-dom";
 
-function EventCard({
-  event,
-}) {
+function EventCard({ event }) {
+  const image =
+    event?.images?.find(
+      (img) => img.width >= 640
+    )?.url ||
+    event?.images?.[0]?.url;
+
+  const venue =
+    event?._embedded?.venues?.[0];
+
+  const category =
+    event?.classifications?.[0]
+      ?.segment?.name ||
+    "Event";
+
+  const date =
+    event?.dates?.start
+      ?.localDate ||
+    "Date TBA";
+
+  const time =
+    event?.dates?.start
+      ?.localTime ||
+    "TBA";
+
+  const location = [
+    venue?.name,
+    venue?.city?.name,
+  ]
+    .filter(Boolean)
+    .join(", ");
+
+  const price =
+    event?.priceRanges?.[0];
+
+  const ticketStatus =
+    event?.dates?.status?.code ===
+    "onsale"
+      ? "Tickets Available"
+      : "Check availability";
+
   return (
-    <article className="event-card">
+    <article className="card">
 
-      <div className="event-image">
-        {event?.image ? (
-          <img
-            src={event.image}
-            alt={event.title}
-          />
-        ) : (
-          <div>
-            Event Image
-          </div>
-        )}
-      </div>
+      {image ? (
+        <img
+          src={image}
+          alt={
+            event?.name ||
+            "Event"
+          }
+          className="card-image"
+        />
+      ) : (
+        <div className="card-image">
+          Event Image
+        </div>
+      )}
 
-      <div className="event-content">
 
-        <span>
-          {event?.category ||
-            "Event"}
+      <div className="card-body">
+
+        <span className="badge">
+          {category}
         </span>
 
+
         <h3>
-          {event?.title ||
+          {event?.name ||
             "Event Title"}
         </h3>
 
-        <p>
-          {event?.description ||
-            "Event description."}
-        </p>
 
         <p>
-          📅{" "}
-          {event?.date ||
-            "Date TBA"}
+          📅 {date}
         </p>
+
+
+        <p>
+          ⏰ {time}
+        </p>
+
 
         <p>
           📍{" "}
-          {event?.location ||
+          {location ||
             "Location TBA"}
         </p>
 
-        {event?.price !==
-          undefined && (
-          <p>
-            🎟️ KSh{" "}
-            {event.price}
-          </p>
-        )}
+
+        <p>
+          💰{" "}
+          {price
+            ? `KES ${price.min} - ${price.max}`
+            : "Price not available"}
+        </p>
+
+
+        <p>
+          🎟️{" "}
+          {ticketStatus}
+        </p>
+
 
         <Link
-          to={`/events/${
-            event?.id ||
-            "unknown"
-          }`}
+          to={`/events/${event?.id}`}
+          className="btn"
         >
-          <button type="button">
-            View Event
-          </button>
+          View Event
         </Link>
 
       </div>
