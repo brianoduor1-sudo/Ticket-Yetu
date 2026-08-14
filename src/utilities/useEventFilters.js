@@ -1,21 +1,14 @@
 import { useMemo, useState } from "react";
 import { filterEvents } from "./filterEvents";
 
-/*
-  HOW TO USE THIS:
-    const {
-      filteredEvents, category, location, dateFrom, dateTo,
-      minPrice, maxPrice,
-      setSearchTerm, setCategory, setLocation, setDateRange, setPriceRange,
-    } = useEventFilters(allEvents);
-
-  Then hand the setters to the components that collect user input:
-    <HeroSection onSearch={setSearchTerm} />
-    <CategoriesSection onSelect={setCategory} />
-    <FilterBar location={location} onLocationChange={setLocation} ... />
-
-  ...and render filteredEvents wherever the event cards get displayed.
-*/
+// Central filter state for the events list. Wire the setters to the
+// inputs that collect filter values, render filteredEvents wherever
+// event cards are displayed.
+//
+// e.g.
+//   const { filteredEvents, setSearchTerm, setCategory, ... } = useEventFilters(allEvents);
+//   <HeroSection onSearch={setSearchTerm} />
+//   <CategoriesSection onSelect={setCategory} />
 export function useEventFilters(events = []) {
   const [searchTerm, setSearchTerm] = useState("");
   const [category, setCategory] = useState("All");
@@ -25,8 +18,7 @@ export function useEventFilters(events = []) {
   const [minPrice, setMinPrice] = useState(null);
   const [maxPrice, setMaxPrice] = useState(null);
 
-  // useMemo re-runs filterEvents only when one of the listed values
-  // actually changes, instead of on every single re-render.
+  // only recompute when a dependency actually changes
   const filteredEvents = useMemo(
     () =>
       filterEvents(events, {
@@ -53,8 +45,7 @@ export function useEventFilters(events = []) {
     setSearchTerm,
     setCategory,
     setLocation,
-    // bundles both date fields into one setter, since FilterBar
-    // updates them together
+    // FilterBar updates both date fields together
     setDateRange: (from, to) => {
       setDateFrom(from);
       setDateTo(to);
