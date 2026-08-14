@@ -1,45 +1,19 @@
+import { useState, useEffect } from "react";
 import EventCard from "./EventCard";
-
-// Temporary local data (later move to src/data/events.js)
-const sportsEvents = [
-  {
-    id: "kpl-001",
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQrQ3KIITc4Z04TX_calNmA0EeHQPbBkpcHfHo5iEWXXg&s=10",
-    name: "Gor Mahia vs AFC Leopards",
-    date: "2026-09-20",
-    time: "15:00",
-    location: "Nyayo Stadium, Nairobi",
-    category: "FKF Premier League",
-    price: 500,
-    availableTickets: 1200,
-  },
-  {
-    id: "rugby-003",
-    image: "https://scrummage.co.ke/2023/09/12/kenya-7s-squad-named/",
-    name: "Kenya Rugby Sevens Invitational",
-    date: "2026-09-27",
-    time: "10:00",
-    location: "RFUEA Grounds, Nairobi",
-    category: "Rugby Sevens",
-    price: 800,
-    availableTickets: 2500,
-  },
-  {
-    id: "basket-004",
-    image:
-      "https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=1587196855982302",
-    name: "Nairobi City Thunder vs Ulinzi Warriors",
-    date: "2026-09-29",
-    time: "18:00",
-    location: "Kasarani Indoor Arena",
-    category: "Basketball",
-    price: 400,
-    availableTickets: 700,
-  },
-];
+import { fetchSportsEvents } from "./services/ticketmaster";
 
 export default function SportsPage() {
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchSportsEvents()
+      .then(setEvents)
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <div
       style={{
@@ -84,10 +58,28 @@ export default function SportsPage() {
           margin: "0 auto",
         }}
       >
-        {sportsEvents.length > 0 ? (
-          sportsEvents.map((event) => (
-            <EventCard key={event.id} event={event} />
-          ))
+        {loading ? (
+          <p
+            style={{
+              color: "#cbd5e1",
+              gridColumn: "1 / -1",
+              textAlign: "center",
+            }}
+          >
+            Loading events...
+          </p>
+        ) : error ? (
+          <p
+            style={{
+              color: "#fca5a5",
+              gridColumn: "1 / -1",
+              textAlign: "center",
+            }}
+          >
+            Failed to load events: {error}
+          </p>
+        ) : events.length > 0 ? (
+          events.map((event) => <EventCard key={event.id} event={event} />)
         ) : (
           <div
             style={{
@@ -108,4 +100,3 @@ export default function SportsPage() {
     </div>
   );
 }
-export default

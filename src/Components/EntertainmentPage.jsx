@@ -1,46 +1,19 @@
+import { useState, useEffect } from "react";
 import EventCard from "./EventCard";
-
-// Temporary local data (later move to src/data/events.js)
-const entertainmentEvents = [
-  {
-    id: "music-005",
-    image:
-      "https://nation.africa/kenya/news/why-sauti-sol-are-right-in-clash-with-azimio-over-extravaganza--3821250",
-    name: "Sauti Sol Reunion Concert",
-    date: "2026-10-10",
-    time: "19:00",
-    location: "KICC Grounds, Nairobi",
-    category: "Music",
-    price: 2500,
-    availableTickets: 3200,
-  },
-  {
-    id: "festival-006",
-    image:
-      "https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=1580321246844110&get_thumbnail=1",
-    name: "Nairobi Afrobeat Festival",
-    date: "2026-10-18",
-    time: "14:00",
-    location: "Uhuru Gardens, Nairobi",
-    category: "Festival",
-    price: 1800,
-    availableTickets: 5000,
-  },
-  {
-    id: "comedy-007",
-    image:
-      "https://i.ytimg.com/vi/YlhLKrzBc80/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLC4pr0BUXvfomNoPUJIKKVHo92_vA",
-    name: "Churchill Comedy Night",
-    date: "2026-11-01",
-    time: "19:30",
-    location: "Carnivore Grounds, Nairobi",
-    category: "Comedy",
-    price: 1200,
-    availableTickets: 1800,
-  },
-];
+import { fetchEntertainmentEvents } from "./services/ticketmaster";
 
 export default function EntertainmentPage() {
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchEntertainmentEvents()
+      .then(setEvents)
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <div
       style={{
@@ -85,10 +58,28 @@ export default function EntertainmentPage() {
           margin: "0 auto",
         }}
       >
-        {entertainmentEvents.length > 0 ? (
-          entertainmentEvents.map((event) => (
-            <EventCard key={event.id} event={event} />
-          ))
+        {loading ? (
+          <p
+            style={{
+              color: "#d8b4fe",
+              gridColumn: "1 / -1",
+              textAlign: "center",
+            }}
+          >
+            Loading events...
+          </p>
+        ) : error ? (
+          <p
+            style={{
+              color: "#fca5a5",
+              gridColumn: "1 / -1",
+              textAlign: "center",
+            }}
+          >
+            Failed to load events: {error}
+          </p>
+        ) : events.length > 0 ? (
+          events.map((event) => <EventCard key={event.id} event={event} />)
         ) : (
           <div
             style={{
