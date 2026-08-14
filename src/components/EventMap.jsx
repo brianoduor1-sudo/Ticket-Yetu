@@ -11,20 +11,12 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
 
-// ============================================================
-//
-// Used on the Event Details page. Shows a small map with a pin at
-// the event's saved location, plus a "Get Directions" button that
-// opens Google Maps in a new tab using just the coordinates — no
-// Google API key needed for that part.
-//
-// id="event-location" makes this the scroll target for
-// EventLocationPin.jsx's clickable pin near the top of the page —
-// the two ids have to match exactly, or the pin click does nothing.
-// ============================================================
+// Event Details page map. Shows a pin at the event's saved location plus
+// a "Get Directions" link (Google Maps, coordinates only  no API key).
+// id="event-location" is the scroll target for EventLocationPin.jsx's
+// pin link  ids must match exactly.
 export default function EventMap({ location }) {
-  // If this event doesn't have a location saved yet (or it's
-  // missing lat/lng), show a simple message instead of a broken map.
+  // No saved location -> show a message instead of a broken map
   if (!location || location.lat == null || location.lng == null) {
     return (
       <section
@@ -43,31 +35,26 @@ export default function EventMap({ location }) {
 
   const { address, lat, lng } = location;
 
-  // Builds a Google Maps "get directions" link using just the
-  // coordinates. This is a normal web link, not an API call, so it
-  // works for free with no setup.
+  // Google Maps directions link built from coordinates only (no API call)
   const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
 
   return (
-    // scroll-mt-6 leaves a little breathing room above this section
-    // when it's scrolled into view from the pin link above
+    // scroll-mt-6: breathing room when scrolled into view from the pin link
     <section
       id="event-location"
       className="mx-auto max-w-5xl scroll-mt-6 px-6 py-10"
     >
       <h2 className="mb-4 text-lg font-semibold text-gray-900">Location</h2>
 
-      {/* Leaflet needs an explicit pixel height on its container,
-          same rule as everywhere else we've used it */}
+      {/* Leaflet requires an explicit pixel height on its container */}
       <div className="h-[280px] overflow-hidden rounded-2xl border border-gray-200 shadow-sm">
         <MapContainer center={[lat, lng]} zoom={15} className="h-full w-full">
-          {/* Draws the actual visible map, pulled from OpenStreetMap */}
+          {/* base map tiles from OpenStreetMap */}
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-          {/* The pin itself, placed at the event's saved coordinates.
-              Clicking it shows a little popup with the address. */}
+          {/* pin at event coords, popup shows address */}
           <Marker position={[lat, lng]}>
             <Popup>{address || "Event location"}</Popup>
           </Marker>
@@ -76,7 +63,7 @@ export default function EventMap({ location }) {
 
       <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-gray-600">{address}</p>
-        {/* Opens Google Maps directions in a new browser tab */}
+        {/* opens Google Maps directions in a new tab */}
         <a
           href={directionsUrl}
           target="_blank"
