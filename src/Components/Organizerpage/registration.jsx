@@ -19,8 +19,35 @@ function Registration() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    console.log("Registration submitted:", formData);
+
+    // basic check so passwords match before saving
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+
+    // 1. get existing users (or start with an empty array)
+    const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
+
+    // 2. add the new one
+    const updatedUsers = [...existingUsers, formData];
+
+    // 3. save back to localStorage
+    localStorage.setItem("users", JSON.stringify(updatedUsers));
+
+    console.log("Registration saved:", formData);
+    alert("Registration successful!");
+
+    // clear the form after saving
+    setFormData({
+      businessName: "",
+      contactName: "",
+      contactPhone: "",
+      contactEmail: "",
+      password: "",
+      confirmPassword: "",
+      country: "",
+    });
   };
 
   return (
@@ -145,7 +172,6 @@ function Registration() {
           </form>
         </div>
 
-        
         <div className="registration-side">
           <div className="registration-image-wrapper">
             <img

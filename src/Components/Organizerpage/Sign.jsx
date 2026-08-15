@@ -22,8 +22,35 @@ function Sign() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // TODO: hook this up to your auth logic / API call
-    console.log("Sign up submitted:", formData);
+
+    // basic check so passwords match before saving
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+
+    // 1. get existing users (or start with an empty array)
+    const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
+
+    // 2. add the new one
+    const updatedUsers = [...existingUsers, formData];
+
+    // 3. save back to localStorage
+    localStorage.setItem("users", JSON.stringify(updatedUsers));
+
+    console.log("Sign up saved:", formData);
+    alert("Registration successful!");
+
+    // clear the form after saving
+    setFormData({
+      businessName: "",
+      contactName: "",
+      contactPhone: "",
+      contactEmail: "",
+      password: "",
+      confirmPassword: "",
+      country: "Kenya",
+    });
   };
 
   return (

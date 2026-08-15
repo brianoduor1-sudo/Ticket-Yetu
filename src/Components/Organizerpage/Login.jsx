@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./Login.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -8,14 +8,36 @@ function Login() {
     password: "",
   });
 
+  const navigate = useNavigate();
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // TODO: hook this up to your auth logic / API call
-    console.log("Login submitted:", formData);
+
+    // get saved users from localStorage
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+
+    // look for a user whose contactEmail + password match what was typed
+    const matchedUser = users.find(
+      (user) =>
+        user.contactEmail === formData.email &&
+        user.password === formData.password
+    );
+
+    if (matchedUser) {
+      console.log("Login successful:", matchedUser);
+
+      // remember who's logged in (optional, but useful for other pages)
+      localStorage.setItem("loggedInUser", JSON.stringify(matchedUser));
+
+      alert(`Welcome back, ${matchedUser.contactName}!`);
+      navigate("/"); // redirect to home page after login
+    } else {
+      alert("Invalid email or password");
+    }
   };
 
   return (

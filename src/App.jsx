@@ -362,6 +362,83 @@ function EventsPage() {
 }
 
 // ==========================================
+// ORGANIZERS PAGE
+// ==========================================
+
+function OrganizersPage() {
+  const organizers = [
+    {
+      name: "Neon Nights Productions",
+      desc: "Festivals & music events across East Africa.",
+    },
+    {
+      name: "PitchSide Sports",
+      desc: "Football, rugby, and athletics event management.",
+    },
+    {
+      name: "Urban Culture Collective",
+      desc: "Comedy shows, art, and community festivals.",
+    },
+  ];
+
+  return (
+    <div
+      style={{
+        minHeight: "70vh",
+        padding: "60px 30px",
+        color: "white",
+        background:
+          "radial-gradient(circle at top, #1e1b4b 0%, #0f172a 50%, #020617 100%)",
+        textAlign: "center",
+      }}
+    >
+      <h1 style={{ fontSize: "3rem", marginBottom: "15px" }}>
+        🎤 Meet Our Organizers
+      </h1>
+      <p
+        style={{
+          color: "#cbd5e1",
+          fontSize: "1.1rem",
+          marginBottom: "50px",
+          maxWidth: "600px",
+          marginLeft: "auto",
+          marginRight: "auto",
+        }}
+      >
+        The promoters and organizations bringing Kenya's best events to life.
+      </p>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+          gap: "30px",
+          maxWidth: "900px",
+          margin: "0 auto",
+        }}
+      >
+        {organizers.map((org) => (
+          <div
+            key={org.name}
+            style={{
+              padding: "30px",
+              borderRadius: "20px",
+              background: "#0f172a",
+              border: "1px solid #334155",
+            }}
+          >
+            <h2 style={{ fontSize: "1.4rem", marginBottom: "10px" }}>
+              {org.name}
+            </h2>
+            <p style={{ color: "#cbd5e1", lineHeight: 1.6 }}>{org.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ==========================================
 // 404 PAGE
 // ==========================================
 
@@ -533,7 +610,7 @@ export default function App() {
         {/* ================= SIGN UP ================= */}
 
         <Route
-          path="/sign"
+          path="/signup"
           element={
             <Layout>
               <Sign />
@@ -569,17 +646,7 @@ export default function App() {
           path="/promoters"
           element={
             <Layout>
-              <div
-                style={{
-                  minHeight: "70vh",
-                  padding: "60px",
-                  color: "white",
-                  background: "#020617",
-                  textAlign: "center",
-                }}
-              >
-                <h1>Organizers</h1>
-              </div>
+              <OrganizersPage />
             </Layout>
           }
         />

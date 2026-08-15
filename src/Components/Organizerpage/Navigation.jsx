@@ -1,8 +1,22 @@
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Navigation.css"; // ← add this
 
 function Navigation() {
   const navigate = useNavigate();
+  const [loggedInUser, setLoggedInUser] = useState(null);
+
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("loggedInUser"));
+    setLoggedInUser(storedUser);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("loggedInUser");
+    setLoggedInUser(null);
+    navigate("/");
+  };
+
   return (
     <nav className="navigation">
       <div className="logo-section">
@@ -18,10 +32,24 @@ function Navigation() {
 
       <div className="nav-actions">
         <Link to="/help">Help</Link>
-        <Link to="/login">↪ Login</Link>
-        <button className="btn" onClick={() => navigate("/signup")}>
-          Sign Up
-        </button>
+
+        {loggedInUser ? (
+          <>
+            <span className="welcome-text">
+              Welcome, {loggedInUser.contactName}
+            </span>
+            <button className="btn" onClick={handleLogout}>
+              Logout
+            </button>
+          </>
+        ) : (
+          <>
+            <Link to="/login">↪ Login</Link>
+            <button className="btn" onClick={() => navigate("/signup")}>
+              Sign Up
+            </button>
+          </>
+        )}
       </div>
     </nav>
   );
