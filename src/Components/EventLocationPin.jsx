@@ -1,5 +1,4 @@
 // ============================================================
-// WHAT THIS COMPONENT DOES, IN PLAIN WORDS:
 //
 // A small "pin + address" line meant to sit near the top of the
 // Event Details page (e.g. next to the date/time). Clicking it
@@ -10,6 +9,9 @@
 // id="event-location" — the href below has to match that id
 // exactly, or the click does nothing.
 // ============================================================
+
+// location = { address, lat, lng } passed down from EventDetailsPage.
+// Can be null if the event has no venue coordinates yet.
 export default function EventLocationPin({ location }) {
   // If there's no address to show yet, don't render a pin that
   // links to nothing.
@@ -18,15 +20,25 @@ export default function EventLocationPin({ location }) {
   }
 
   return (
+    // href="#event-location" is a plain anchor-link scroll — no JS
+    // scroll logic needed, the browser handles it natively as long
+    // as an element on the page has that exact id.
     <a
       href="#event-location"
       className="inline-flex items-center gap-1.5 text-sm font-medium text-violet-600 hover:text-violet-700 hover:underline"
     >
-      {/* Simple pin icon, no icon library dependency */}
+      {/* Simple pin icon, no icon library dependency (no lucide-react
+          or similar needed just for this one icon).
+          width/height set directly on the SVG (not just via the
+          h-4/w-4 Tailwind classes) so it renders at the right small
+          size even if Tailwind isn't loading correctly on this page —
+          this was the actual bug causing the icon to render huge. */}
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 20 20"
         fill="currentColor"
+        width="16"
+        height="16"
         className="h-4 w-4 shrink-0"
         aria-hidden="true"
       >
@@ -36,6 +48,7 @@ export default function EventLocationPin({ location }) {
           clipRule="evenodd"
         />
       </svg>
+      {/* the venue address itself, e.g. "UMA Show Grounds, Kampala" */}
       {location.address}
     </a>
   );
