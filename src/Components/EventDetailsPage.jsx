@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { fetchEventById } from "./services/ticketmaster";
+import { eventService } from "./services/eventService";       
+import { BookingForm } from "./booking/BookingForm";         
 
 export default function EventDetailsPage() {
   const { id } = useParams();
@@ -9,6 +11,7 @@ export default function EventDetailsPage() {
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [booking, setBooking] = useState(false);               
 
   useEffect(() => {
     fetchEventById(id)
@@ -31,11 +34,9 @@ export default function EventDetailsPage() {
         <h1 style={{ fontSize: "2.5rem", marginBottom: "12px" }}>
           Event not found
         </h1>
-
         <p style={{ color: "#cbd5e1", marginBottom: "24px" }}>
           {error || "We couldn't find an event with that ID."}
         </p>
-
         <button onClick={() => navigate("/")} style={backButtonStyle}>
           Back to Home
         </button>
@@ -50,9 +51,7 @@ export default function EventDetailsPage() {
   const venue = event._embedded?.venues?.[0];
   const segment = event.classifications?.[0]?.segment?.name;
   const isSports = segment === "Sports";
-
   const accent = isSports ? "#2563eb" : "#db2777";
-
   const backLink = isSports ? "/events/sports" : "/events/entertainment";
 
   return (
@@ -67,11 +66,7 @@ export default function EventDetailsPage() {
       <div style={{ maxWidth: "900px", margin: "0 auto" }}>
         <Link
           to={backLink}
-          style={{
-            color: "#94a3b8",
-            textDecoration: "none",
-            fontSize: "0.95rem",
-          }}
+          style={{ color: "#94a3b8", textDecoration: "none", fontSize: "0.95rem" }}
         >
           ← Back to {isSports ? "Sports" : "Entertainment"}
         </Link>
@@ -89,11 +84,7 @@ export default function EventDetailsPage() {
             <img
               src={image}
               alt={event.name}
-              style={{
-                width: "100%",
-                maxHeight: "380px",
-                objectFit: "cover",
-              }}
+              style={{ width: "100%", maxHeight: "380px", objectFit: "cover" }}
             />
           )}
 
@@ -126,14 +117,11 @@ export default function EventDetailsPage() {
               }}
             >
               <p>📅 {event.dates?.start?.localDate}</p>
-
               <p>⏰ {event.dates?.start?.localTime || "TBA"}</p>
-
               <p>
                 📍 {venue?.name}
                 {venue?.city?.name ? `, ${venue.city.name}` : ""}
               </p>
-
               <p>
                 🎟️{" "}
                 {event.dates?.status?.code === "onsale"
@@ -153,36 +141,35 @@ export default function EventDetailsPage() {
                 borderTop: "1px solid rgba(148, 163, 184, 0.2)",
               }}
             >
-              <span
-                style={{
-                  fontSize: "1.8rem",
-                  fontWeight: "bold",
-                }}
-              >
+              <span style={{ fontSize: "1.8rem", fontWeight: "bold" }}>
                 {event.priceRanges?.[0]
                   ? `KES ${event.priceRanges[0].min} - ${event.priceRanges[0].max}`
                   : "Price not available"}
               </span>
 
-              <a
-                href={event.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  padding: "14px 32px",
-                  borderRadius: "12px",
-                  border: "none",
-                  background: accent,
-                  color: "white",
-                  fontWeight: "bold",
-                  fontSize: "1rem",
-                  cursor: "pointer",
-                  textDecoration: "none",
-                  display: "inline-block",
-                }}
-              >
-                Book Ticket
-              </a>
+              {/* ↓↓↓ REPLACED the old <a href={event.url}> external link ↓↓↓ */}
+              {booking ? (
+                <div style={{ width: "100%", marginTop: 16 }}>
+                  <BookingForm event={eventService.getOrCreateFromTicketmaster(event)} />
+                </div>
+              ) : (
+                <button
+                  onClick={() => setBooking(true)}
+                  style={{
+                    padding: "14px 32px",
+                    borderRadius: "12px",
+                    border: "none",
+                    background: accent,
+                    color: "white",
+                    fontWeight: "bold",
+                    fontSize: "1rem",
+                    cursor: "pointer",
+                  }}
+                >
+                  Book Ticket
+                </button>
+              )}
+              {/* ↑↑↑ END REPLACEMENT ↑↑↑ */}
             </div>
           </div>
         </div>

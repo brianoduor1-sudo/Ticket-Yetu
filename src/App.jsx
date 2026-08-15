@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 // Event pages
 import SportsPage from "./Components/SportsPage.jsx";
@@ -8,18 +9,19 @@ import EventDetailsPage from "./Components/EventDetailsPage.jsx";
 // Main navigation / organizer pages
 import Navigation from "./Components/Organizerpage/Navigation.jsx";
 import Blog from "./Components/Organizerpage/Blog.jsx";
-import Footer from "./Components/Organizerpage/Footer.jsx";
 import Help from "./Components/Organizerpage/Help.jsx";
 import Info from "./Components/Organizerpage/Info.jsx";
 import Instructions from "./Components/Organizerpage/Instructions.jsx";
 import Registration from "./Components/Organizerpage/registration.jsx";
 import Login from "./Components/Organizerpage/Login.jsx";
 import Sign from "./Components/Organizerpage/Sign.jsx";
+import Footer from "./Components/Organizerpage/Footer.jsx";
 
 // Booking components
 import { BookingConfirmation } from "./Components/booking/BookingConfirmation.jsx";
 import { TicketStub } from "./Components/booking/TicketStub.jsx";
 import { PaymentPanel } from "./Components/booking/PaymentPanel.jsx";
+import MyTickets from "./Components/tickets/MyTickets.jsx";
 
 // Other components
 import LocationPicker from "./Components/LocationPicker.jsx";
@@ -31,15 +33,16 @@ import Categories from "./Components/Categories.jsx";
 // ==========================================
 // LAYOUT
 // ==========================================
-
 function Layout({ children }) {
+  const location = useLocation();
+  const hideFooterOn = ["/info", "/instructions", "/registration"];
+  const showFooter = !hideFooterOn.includes(location.pathname);
+
   return (
     <>
       <Navigation />
-
       {children}
-
-      <Footer />
+      {showFooter && <Footer />}
     </>
   );
 }
@@ -362,46 +365,6 @@ function EventsPage() {
 }
 
 // ==========================================
-// 404 PAGE
-// ==========================================
-
-function NotFound() {
-  return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        flexDirection: "column",
-        textAlign: "center",
-
-        background: "radial-gradient(circle at top, #111827 0%, #020617 100%)",
-
-        color: "white",
-      }}
-    >
-      <h1
-        style={{
-          fontSize: "3rem",
-          marginBottom: "12px",
-        }}
-      >
-        404
-      </h1>
-
-      <p
-        style={{
-          color: "#cbd5e1",
-        }}
-      >
-        The page you are looking for does not exist.
-      </p>
-    </div>
-  );
-}
-
-// ==========================================
 // APP
 // ==========================================
 
@@ -563,6 +526,17 @@ export default function App() {
           }
         />
 
+        {/* ================= My Tickets ===================*/}
+        
+        <Route
+          path="/my-tickets"
+          element={
+            <Layout>
+              <MyTickets />
+            </Layout>
+          }
+        />
+
         {/* ================= ORGANIZERS ================= */}
 
         <Route
@@ -657,3 +631,45 @@ export default function App() {
     </BrowserRouter>
   );
 }
+
+
+// ==========================================
+// 404 PAGE
+// ==========================================
+
+function NotFound() {
+  return (
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexDirection: "column",
+        textAlign: "center",
+
+        background: "radial-gradient(circle at top, #111827 0%, #020617 100%)",
+
+        color: "white",
+      }}
+    >
+      <h1
+        style={{
+          fontSize: "3rem",
+          marginBottom: "12px",
+        }}
+      >
+        404
+      </h1>
+
+      <p
+        style={{
+          color: "#cbd5e1",
+        }}
+      >
+        The page you are looking for does not exist.
+      </p>
+    </div>
+  );
+}
+
