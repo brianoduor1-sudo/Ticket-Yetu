@@ -5,9 +5,8 @@ import L from "leaflet";
 // NOT here. Importing it per-component made it load unreliably and
 // caused the marker icon to render huge/unstyled. Don't re-add it here.
 
-// This fixes a common bug where the map pin icon doesn't show up
-// correctly when using Leaflet inside tools like Vite. We're telling
-// Leaflet exactly where to find the pin images online instead.
+// Fix for Leaflet's default marker icons not resolving under Vite 
+// point icon URLs at the CDN directly.
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl:
@@ -23,13 +22,10 @@ L.Icon.Default.mergeOptions({
   shadowSize: [41, 41],
 });
 
-// Where the map is centered when it first loads, before any pin is
-// placed. Currently set to Nairobi, change if needed.
+// Map center before any pin is placed (Nairobi)
 const DEFAULT_CENTER = [-1.2921, 36.8219];
 
-// A small helper component whose only job is to listen for clicks
-// on the map. When someone clicks anywhere on the map, it tells us
-// the exact latitude/longitude of that click.
+// Listens for map clicks, reports lat/lng back. Renders nothing itself.
 function ClickHandler({ onSelect }) {
   useMapEvents({
     click(e) {
@@ -37,30 +33,28 @@ function ClickHandler({ onSelect }) {
       onSelect({ lat: e.latlng.lat, lng: e.latlng.lng });
     },
   });
-  return null; // this component doesn't show anything on its own
+  return null;
 }
 
 // value = existing address/lat/lng if editing an event, otherwise undefined
 // onChange = function from the parent form, called every time address or pin changes
-export default function LocationPicker({ value, onChange }) {
-  // Remembers what's typed in the address text box.
-  // If a value was already passed in (e.g. editing an existing
-  // event), we start with that instead of blank.
-  const [address, setAddress] = useState(value?.address || "");
 
-  // Remembers where the pin currently is on the map (lat/lng).
-  // Starts as "no pin yet" unless a value was already passed in.
+// Create Event form field: type a venue name, click the map to drop a pin.
+// Emits { address, lat, lng } on every change same shape EventMap.jsx expects.
+export default function LocationPicker({ value, onChange }) {
+  const [address, setAddress] = useState(value?.address || ""); // prefill if editing existing event
   const [position, setPosition] = useState(
     value?.lat && value?.lng ? { lat: value.lat, lng: value.lng } : null
   );
 
-  // Runs every time the person types in the address box.
   function handleAddressChange(e) {
     const newAddress = e.target.value;
     setAddress(newAddress);
+
     // Send the updated info up to the parent form right away.
     // We keep whatever pin position already exists (or null if none yet) —
     // typing an address doesn't move the pin, only clicking the map does.
+
     onChange({
       address: newAddress,
       lat: position?.lat ?? null,
@@ -68,11 +62,13 @@ export default function LocationPicker({ value, onChange }) {
     });
   }
 
-  // Runs when the person clicks somewhere on the map.
   function handleMapSelect(latlng) {
     setPosition(latlng);
+
     // Send the updated info (including the new coordinates) up to
     // the parent form. We keep whatever address text is already typed.
+
+
     onChange({ address, lat: latlng.lat, lng: latlng.lng });
   }
 
@@ -85,8 +81,6 @@ export default function LocationPicker({ value, onChange }) {
         Venue / Address
       </label>
 
-      {/* Plain text box for typing the venue name, e.g.
-          "Kenyatta University, Main Campus" */}
       <input
         id="venue-address"
         type="text"
@@ -100,37 +94,39 @@ export default function LocationPicker({ value, onChange }) {
         Click on the map below to drop a pin at the exact venue location.
       </p>
 
-      {/* Leaflet needs an explicit pixel height on its container,
-          same rule as every other map in this app */}
+      {/* Leaflet requires an explicit pixel height on its container */}
       <div className="h-[300px] overflow-hidden rounded-2xl border border-gray-200 shadow-sm">
         <MapContainer
-          // If a pin already exists, center the map on it. Otherwise,
-          // center on the default location (Nairobi).
           center={position ? [position.lat, position.lng] : DEFAULT_CENTER}
           zoom={13}
           className="h-full w-full"
         >
-          {/* This is what actually draws the visible map tiles
-              (roads, buildings, etc), pulled from OpenStreetMap. */}
+          {/* base map tiles from OpenStreetMap */}
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
 
+
           {/* Listens for map clicks and reports back the coordinates.
               Renders nothing itself — just wires up the click event. */}
-          <ClickHandler onSelect={handleMapSelect} />
+            <ClickHandler onSelect={handleMapSelect} />
 
-          {/* Only show a pin if one has actually been placed —
+            {/* Only show a pin if one has actually been placed —
               avoids showing a pin at (0,0) or some default spot */}
+
           {position && <Marker position={[position.lat, position.lng]} />}
         </MapContainer>
       </div>
+
 
       {/* Small text showing the exact coordinates, just for
           confirmation/debugging, helpful while building/testing.
           toFixed(5) trims to 5 decimal places (~1 meter accuracy) so
           it doesn't show Leaflet's full raw floating-point number. */}
+
+      {/* debug/confirmation text, useful while testing */}
+
       {position && (
         <p className="text-xs text-gray-400">
           Selected: {position.lat.toFixed(5)}, {position.lng.toFixed(5)}
