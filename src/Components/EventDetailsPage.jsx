@@ -1,13 +1,10 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { fetchEventById } from "./services/ticketmaster";
-<<<<<<< HEAD
-import { eventService } from "./services/eventService";       
-import { BookingForm } from "./booking/BookingForm";         
-=======
+import { eventService } from "./services/eventService";
+import { BookingForm } from "./booking/BookingForm";
 import EventLocationPin from "../components/EventLocationPin.jsx";
 import EventMap from "../components/EventMap.jsx";
->>>>>>> b8cb1d1c8528aeae0df2f8d1bad02cd0b38ceee3
 
 export default function EventDetailsPage() {
   const { id } = useParams();
