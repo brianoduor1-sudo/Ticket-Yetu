@@ -1,7 +1,6 @@
 import { useState } from "react";
 
 // ============================================================
-
 //
 // `groups` looks like:
 //   { Sports: ["Football", "Basketball"], Entertainment: ["Music"] }
@@ -9,7 +8,7 @@ import { useState } from "react";
 // The parent component (EventsPage in App.jsx) builds this object
 // from REAL Ticketmaster event data, so every button here is
 // guaranteed to match an actual event.category value returned by
-// the API no more made-up league names.
+// the API, not made-up league names.
 //
 // A group either has children or doesn't. If it has children,
 // clicking the group just opens row 2 and waits for a specific pick.
@@ -18,34 +17,25 @@ import { useState } from "react";
 // ============================================================
 
 export default function CategoriesSection({ groups = {}, onSelect }) {
-  // Remembers which group button is currently selected.
   const [activeGroup, setActiveGroup] = useState("All");
-  // Remembers which specific (row 2) button is currently selected.
   const [activeCategory, setActiveCategory] = useState(null);
 
   const groupNames = ["All", ...Object.keys(groups)];
   const specificCategories = groups[activeGroup] ?? [];
 
-  // Runs when someone clicks a ROW 1 (group) button.
   const handleGroupClick = (group) => {
     setActiveGroup(group);
-    setActiveCategory(null); // clear any specific selection from before
+    setActiveCategory(null);
 
-    // If this group has no specific categories under it, the group
-    // NAME is itself a real filter value — fire onSelect right away
-    // instead of waiting for a row 2 click that will never come.
     const children = groups[group] ?? [];
     if (group === "All" || children.length === 0) {
       onSelect?.(group);
     }
-    // Otherwise (e.g. "Sports" with real sub-genres), wait for a
-    // specific pick below.
   };
 
-  // Runs when someone clicks a ROW 2 (specific category) button.
   const handleCategoryClick = (category) => {
     setActiveCategory(category);
-    onSelect?.(category); // matches a real event genre value, since it came from actual event data
+    onSelect?.(category);
   };
 
   return (
@@ -54,10 +44,10 @@ export default function CategoriesSection({ groups = {}, onSelect }) {
         Browse by category
       </h2>
 
-      {/* ROW 1: group buttons (All, Sports, Entertainment...) */}
       <div className="flex flex-wrap gap-2">
         {groupNames.map((group) => {
           const isActive = group === activeGroup;
+
           return (
             <button
               key={group}
@@ -74,12 +64,11 @@ export default function CategoriesSection({ groups = {}, onSelect }) {
         })}
       </div>
 
-      {/* ROW 2: only appears if the selected group actually has
-          real sub-categories underneath it (from live event data) */}
       {specificCategories.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-2 pl-2">
           {specificCategories.map((category) => {
             const isActive = category === activeCategory;
+
             return (
               <button
                 key={category}
