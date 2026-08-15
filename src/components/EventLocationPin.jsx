@@ -1,28 +1,16 @@
-// ============================================================
-// WHAT THIS COMPONENT DOES, IN PLAIN WORDS:
-//
-// A small "pin + address" line meant to sit near the top of the
-// Event Details page (e.g. next to the date/time). Clicking it
-// smooth-scrolls down the same page to the full map, which is
-// rendered by EventMap.jsx further down.
-//
-// This ONLY works if EventMap.jsx's outer <section> still has
-// id="event-location" — the href below has to match that id
-// exactly, or the click does nothing.
-// ============================================================
+// Pin + address link near the top of Event Details. Clicking scrolls
+// down to the map section rendered by EventMap.jsx.
+// Requires EventMap.jsx's outer <section> to keep id="event-location" -
+// href below must match it exactly.
 export default function EventLocationPin({ location }) {
-  // If there's no address to show yet, don't render a pin that
-  // links to nothing.
-  if (!location || !location.address) {
-    return null;
-  }
+  if (!location || !location.address) return null; // nothing to link to yet
 
   return (
     <a
       href="#event-location"
       className="inline-flex items-center gap-1.5 text-sm font-medium text-violet-600 hover:text-violet-700 hover:underline"
     >
-      {/* Simple pin icon, no icon library dependency */}
+      {/* pin icon, no icon library dependency */}
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 20 20"

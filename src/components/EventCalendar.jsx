@@ -1,105 +1,63 @@
 import { useState } from "react";
 
-// ============================================================
-// WHAT THIS COMPONENT DOES, IN PLAIN WORDS:
-//
-// It shows a month calendar, like a normal wall calendar.
-// Any day that has an event gets a small purple dot under the number.
-// Clicking a day shows the list of events happening that day.
-// There are "<" and ">" buttons to move to the previous/next month.
-//
-// This component doesn't fetch any events itself. It's handed a
-// list of events as a prop, and it just figures out which day each
-// one belongs on, based on its date.
-// ============================================================
+// Month calendar. Highlights days with events, click a day to list its events.
+// Receives events as a prop; does not fetch data itself.
 
 export default function EventCalendar({ events, onSelectEvent }) {
-  // Remembers which month/year we're currently looking at.
-  // Starts on today's real date when the page first loads.
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState(new Date()); // month/year in view
+  const [selectedDay, setSelectedDay] = useState(null); // clicked day number
 
-  // Remembers which day number is currently clicked/selected.
-  // Starts as "nothing selected" (null).
-  const [selectedDay, setSelectedDay] = useState(null);
-
-  // Pulls the year and month number out of currentDate, so we can
-  // use them below to figure out the calendar grid.
   const year = currentDate.getFullYear();
-  const month = currentDate.getMonth(); // 0 = January, 11 = December
+  const month = currentDate.getMonth(); // 0-indexed
 
-  // Turns the date into a readable heading, like "August 2026".
   const monthName = currentDate.toLocaleString("default", {
     month: "long",
     year: "numeric",
   });
 
-  // Figures out what weekday the 1st of this month falls on
-  // (0 = Sunday, 1 = Monday, etc). We need this to know how many
-  // empty blank squares to show before day 1 starts.
   const firstDayOfMonth = new Date(year, month, 1);
-  const startingWeekday = firstDayOfMonth.getDay();
+  const startingWeekday = firstDayOfMonth.getDay(); // leading blanks needed
 
-  // Figures out how many days are in this month (28, 30, or 31).
-  // The trick: asking for "day 0" of NEXT month gives us the
-  // last day of THIS month.
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const daysInMonth = new Date(year, month + 1, 0).getDate(); // day 0 of next month = last day of this one
 
-  // Builds one long list representing every square in the calendar
-  // grid: some blank squares first (padding), then the real day
-  // numbers (1, 2, 3... up to the last day of the month).
+  // Build grid cells: blanks for padding, then day numbers
   const cells = [];
-  for (let i = 0; i < startingWeekday; i++) {
-    cells.push(null); // blank square, no day number here
-  }
-  for (let day = 1; day <= daysInMonth; day++) {
-    cells.push(day); // a real day number
-  }
+  for (let i = 0; i < startingWeekday; i++) cells.push(null);
+  for (let day = 1; day <= daysInMonth; day++) cells.push(day);
 
-  // Turns a day number (like 15) into a full date string like
-  // "2026-08-15", so we can match it against event.date, which is
-  // stored in that same format.
+  // day -> "YYYY-MM-DD" to match event.date format
   function formatDateKey(day) {
-    const mm = String(month + 1).padStart(2, "0"); // add leading 0 if needed
+    const mm = String(month + 1).padStart(2, "0");
     const dd = String(day).padStart(2, "0");
     return `${year}-${mm}-${dd}`;
   }
 
-  // Looks through the full events list and returns only the ones
-  // happening on this specific day.
   function eventsOnDay(day) {
     const dateKey = formatDateKey(day);
     return events.filter((event) => event.date === dateKey);
   }
 
-  // Moves the calendar back one month when "<" is clicked.
   function goToPreviousMonth() {
     setCurrentDate(new Date(year, month - 1, 1));
-    setSelectedDay(null); // clear selection since we're on a new month now
+    setSelectedDay(null);
   }
 
-  // Moves the calendar forward one month when ">" is clicked.
   function goToNextMonth() {
     setCurrentDate(new Date(year, month + 1, 1));
     setSelectedDay(null);
   }
 
-  // Runs when someone clicks a day square. Ignores clicks on blank
-  // (padding) squares, since those don't have a real day number.
   function handleDayClick(day) {
-    if (!day) return;
+    if (!day) return; // ignore blank cells
     setSelectedDay(day);
   }
 
-  // Just the short weekday labels shown across the top of the grid.
   const weekdayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-  // The actual list of events to show below the grid, only
-  // calculated if a day is currently selected.
   const selectedDayEvents = selectedDay ? eventsOnDay(selectedDay) : [];
 
   return (
     <div className="mx-auto max-w-md rounded-lg bg-white p-6 shadow-lg">
-      {/* Header row: back arrow, month/year heading, forward arrow */}
+      {/* Month nav */}
       <div className="mb-4 flex items-center justify-between">
         <button onClick={goToPreviousMonth} className="px-3 py-1 text-violet-600 hover:bg-violet-100 rounded">
           &lsaquo;
@@ -110,7 +68,7 @@ export default function EventCalendar({ events, onSelectEvent }) {
         </button>
       </div>
 
-      {/* Row of weekday labels: Sun, Mon, Tue... */}
+      {/* Weekday header */}
       <div className="mb-2 grid grid-cols-7">
         {weekdayLabels.map((label) => (
           <div key={label} className="text-center text-xs font-semibold uppercase text-gray-400">
@@ -119,11 +77,9 @@ export default function EventCalendar({ events, onSelectEvent }) {
         ))}
       </div>
 
-      {/* The actual calendar grid: 7 columns wide (one per weekday) */}
+      {/* Calendar grid */}
       <div className="grid grid-cols-7 gap-1">
         {cells.map((day, index) => {
-          // For each square, check if it has any events, and
-          // whether it's the currently selected day (for styling).
           const dayEvents = day ? eventsOnDay(day) : [];
           const isSelected = day === selectedDay;
 
@@ -131,18 +87,17 @@ export default function EventCalendar({ events, onSelectEvent }) {
             <button
               key={index}
               onClick={() => handleDayClick(day)}
-              disabled={!day} // blank squares aren't clickable
+              disabled={!day}
               className={`relative aspect-square rounded-lg text-sm flex items-center justify-center transition ${
                 !day
-                  ? "bg-transparent" // blank square: invisible
+                  ? "bg-transparent"
                   : isSelected
-                  ? "bg-violet-600 text-white" // this day IS selected: solid purple
-                  : "bg-gray-50 hover:bg-violet-100 text-gray-900" // normal day
+                  ? "bg-violet-600 text-white"
+                  : "bg-gray-50 hover:bg-violet-100 text-gray-900"
               }`}
             >
               {day}
-              {/* Small purple dot shown under the day number, only
-                  if this day has at least one event happening */}
+              {/* event indicator dot */}
               {dayEvents.length > 0 && (
                 <span className={`absolute bottom-1 h-1.5 w-1.5 rounded-full ${isSelected ? "bg-white" : "bg-violet-600"}`} />
               )}
@@ -151,8 +106,7 @@ export default function EventCalendar({ events, onSelectEvent }) {
         })}
       </div>
 
-      {/* Below the grid: only shows up once a day has been clicked.
-          Lists every event happening on that specific day. */}
+      {/* Event list for selected day */}
       {selectedDay && (
         <div className="mt-5 border-t pt-4">
           <h3 className="mb-2 text-sm font-semibold text-gray-900">
