@@ -1,5 +1,6 @@
 import EventCard from "./EventCard";
 
+// Temporary local data (later move to src/data/events.js)
 const sportsEvents = [
   {
     id: "kpl-001",
@@ -27,7 +28,7 @@ const sportsEvents = [
   {
     id: "basket-004",
     image:
-      "https://www.google.com/imgres?q=%22Nairobi%20City%20Thunder%20vs%20Ulinzi%20Warriors%22&imgurl=https%3A%2F%2Flookaside.fbsbx.com%2Flookaside%2Fcrawler%2Fmedia%2F%3Fmedia_id%3D1587196855982302&imgrefurl=https%3A%2F%2Fwww.facebook.com%2F254citythunder%2Fphotos%2Fnairobi-city-thunder-vs-ulinzi-warriorspreseason-friendly-games-are-about-rhythm%2F1587196855982302%2F&docid=iaCJHFM_IY1zDM&tbnid=9O-qrOyPOM2LAM&vet=12ahUKEwj2y8vH9ZyWAxVD1AIHHTYiIy4QnPAOegQIQhAA..i&w=1080&h=1080&hcb=2&ved=2ahUKEwj2y8vH9ZyWAxVD1AIHHTYiIy4QnPAOegQIQhAA",
+      "https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=1587196855982302",
     name: "Nairobi City Thunder vs Ulinzi Warriors",
     date: "2026-09-29",
     time: "18:00",
@@ -48,9 +49,31 @@ export default function SportsPage() {
         minHeight: "100vh",
       }}
     >
-      <h1 style={{ color: "white", textAlign: "center", fontSize: "3rem" }}>
+      <h1
+        style={{
+          color: "white",
+          textAlign: "center",
+          fontSize: "3rem",
+          fontWeight: "800",
+          marginBottom: "12px",
+        }}
+      >
         🏆 Sports Events
       </h1>
+
+      <p
+        style={{
+          color: "#cbd5e1",
+          textAlign: "center",
+          maxWidth: "720px",
+          margin: "0 auto 32px",
+          fontSize: "1.05rem",
+          lineHeight: 1.7,
+        }}
+      >
+        Explore upcoming football matches, rugby tournaments, basketball games,
+        and other exciting sporting events happening across Kenya.
+      </p>
 
       <div
         style={{
@@ -58,13 +81,31 @@ export default function SportsPage() {
           gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
           gap: "28px",
           maxWidth: "1280px",
-          margin: "32px auto 0",
+          margin: "0 auto",
         }}
       >
-        {sportsEvents.map((event) => (
-          <EventCard key={event.id} event={event} />
-        ))}
+        {sportsEvents.length > 0 ? (
+          sportsEvents.map((event) => (
+            <EventCard key={event.id} event={event} />
+          ))
+        ) : (
+          <div
+            style={{
+              gridColumn: "1 / -1",
+              textAlign: "center",
+              color: "#e2e8f0",
+              padding: "48px 16px",
+              border: "1px dashed #475569",
+              borderRadius: "24px",
+              background: "rgba(15, 23, 42, 0.55)",
+            }}
+          >
+            <h3 style={{ marginBottom: "8px" }}>No sports events available</h3>
+            <p>Check back later for upcoming fixtures and tournaments.</p>
+          </div>
+        )}
       </div>
     </div>
   );
 }
+export default
