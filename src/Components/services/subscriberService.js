@@ -3,7 +3,7 @@
 // no logic at all) but doesn't send anything — real delivery is the same
 // Phase 2 backend dependency as email notifications (see notificationService.js).
 
-import { storage } from '../data/storage';
+import { storage } from '../../data/storage';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 

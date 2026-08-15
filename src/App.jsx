@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 
 // Event pages: fetch and display live event data from Ticketmaster API
 import SportsPage from "./Components/SportsPage.jsx";
@@ -15,18 +15,19 @@ import {
 // Organizer-side pages (nav, auth, static content)
 import Navigation from "./Components/Organizerpage/Navigation.jsx";
 import Blog from "./Components/Organizerpage/Blog.jsx";
-import Footer from "./Components/Organizerpage/Footer.jsx";
 import Help from "./Components/Organizerpage/Help.jsx";
 import Info from "./Components/Organizerpage/Info.jsx";
 import Instructions from "./Components/Organizerpage/Instructions.jsx";
 import Registration from "./Components/Organizerpage/Registration.jsx";
 import Login from "./Components/Organizerpage/Login.jsx";
 import Sign from "./Components/Organizerpage/Sign.jsx";
+import Footer from "./Components/Organizerpage/Footer.jsx";
 
 // Booking flow: shown after a user picks an event to purchase tickets
 import { BookingConfirmation } from "./Components/booking/BookingConfirmation.jsx";
 import { TicketStub } from "./Components/booking/TicketStub.jsx";
 import { PaymentPanel } from "./Components/booking/PaymentPanel.jsx";
+import MyTickets from "./Components/tickets/MyTickets.jsx";
 
 // Event browsing/discovery components — NOTE: lowercase "components" folder,
 // separate from the capital "Components" folder imported above
@@ -35,17 +36,20 @@ import HeroSection from "./components/HeroSection.jsx";
 import EventCalendar from "./components/EventCalendar.jsx";
 import EventLocationPin from "./components/EventLocationPin.jsx";
 import CategoriesSection from "./components/CategoriesSection.jsx";
-import EventMap from "./components/EventMap.jsx";
 
 // ==========================================
 // LAYOUT
 // ==========================================
 function Layout({ children }) {
+  const location = useLocation();
+  const hideFooterOn = ["/info", "/instructions", "/registration"];
+  const showFooter = !hideFooterOn.includes(location.pathname);
+
   return (
     <>
       <Navigation />
       {children}
-      <Footer />
+      {showFooter && <Footer />}
     </>
   );
 }
@@ -150,35 +154,18 @@ function HomePage() {
 // ==========================================
 // EVENTS CATEGORY PAGE
 // ==========================================
-// "/events" hub page. Hero search box + category pills up top.
-//
-// On load, fetches BOTH sports and entertainment events so we can:
-//   (a) build the category pills from REAL genre values in the data
-//       (instead of hardcoded guesses like "FKF Premier League"),
-//   (b) filter and show matching events inline when a category is
-//       clicked, instead of just navigating away to another page.
-//
-// Typing a search debounces (waits 400ms after you stop typing) then
-// calls fetchEventsByKeyword and renders results as EventCards. A
-// search query takes priority over category filtering if both are
-// active — simplest behavior for now given the deadline.
 function EventsPage() {
-  const navigate = useNavigate();
-
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [searching, setSearching] = useState(false);
   const [searchError, setSearchError] = useState(null);
 
-  // All events fetched on page load (sports + entertainment combined),
-  // used to build category pills and to filter for the category view.
   const [allEvents, setAllEvents] = useState([]);
   const [loadingEvents, setLoadingEvents] = useState(true);
   const [eventsError, setEventsError] = useState(null);
 
   const [selectedCategory, setSelectedCategory] = useState("All");
 
-  // Fetch both event types once when the page loads.
   useEffect(() => {
     Promise.all([fetchSportsEvents(), fetchEntertainmentEvents()])
       .then(([sports, entertainment]) => {
@@ -188,11 +175,6 @@ function EventsPage() {
       .finally(() => setLoadingEvents(false));
   }, []);
 
-  // Build real category groups from the fetched events instead of
-  // guessing league/genre names. Ticketmaster events have
-  // classifications[0].segment.name (e.g. "Sports", "Music") and
-  // classifications[0].genre.name (e.g. "Football", "Rock").
-  // We group genres under their segment, and dedupe with a Set.
   const categoryGroups = useMemo(() => {
     const groups = {};
 
@@ -200,17 +182,14 @@ function EventsPage() {
       const segment = event.classifications?.[0]?.segment?.name;
       const genre = event.classifications?.[0]?.genre?.name;
 
-      if (!segment) return; // skip events with no classification data
+      if (!segment) return;
 
       if (!groups[segment]) groups[segment] = new Set();
-      // Ticketmaster sometimes uses "Undefined" as a placeholder genre —
-      // skip that, it's not a useful filter option.
       if (genre && genre !== "Undefined") {
         groups[segment].add(genre);
       }
     });
 
-    // Convert each Set to a sorted array for stable button order.
     const result = {};
     Object.entries(groups).forEach(([segment, genreSet]) => {
       result[segment] = Array.from(genreSet).sort();
@@ -218,10 +197,6 @@ function EventsPage() {
     return result;
   }, [allEvents]);
 
-  // Filters allEvents by the selected group/category name. Matches
-  // either the segment (e.g. "Sports") or a specific genre (e.g.
-  // "Football"), since a click on a childless group passes the
-  // group name itself as the category.
   const categoryFilteredEvents = useMemo(() => {
     if (selectedCategory === "All") return allEvents;
 
@@ -247,7 +222,7 @@ function EventsPage() {
         .finally(() => setSearching(false));
     }, 400);
 
-    return () => clearTimeout(timer); // cancel if user keeps typing
+    return () => clearTimeout(timer);
   }, [query]);
 
   const handleSearch = (value) => {
@@ -258,7 +233,6 @@ function EventsPage() {
     setSelectedCategory(category);
   };
 
-  // Search takes priority over category browsing if both are active.
   const showSearchResults = query.trim().length > 0;
 
   return (
@@ -266,7 +240,6 @@ function EventsPage() {
       <HeroSection onSearch={handleSearch} />
       <CategoriesSection groups={categoryGroups} onSelect={handleCategorySelect} />
 
-      {/* SEARCH RESULTS — shown when there's an active search query */}
       {showSearchResults && (
         <div style={{ padding: "20px 30px 40px", textAlign: "center" }}>
           {searching && <p style={{ color: "#cbd5e1" }}>Searching...</p>}
@@ -297,7 +270,6 @@ function EventsPage() {
         </div>
       )}
 
-      {/* CATEGORY-FILTERED EVENTS — shown when not searching */}
       {!showSearchResults && (
         <div style={{ padding: "20px 30px 60px" }}>
           {loadingEvents ? (
@@ -556,9 +528,10 @@ export default function App() {
         <Route path="/instructions" element={<Layout><Instructions /></Layout>} />
         <Route path="/registration" element={<Layout><Registration /></Layout>} />
         <Route path="/login" element={<Layout><Login /></Layout>} />
-        <Route path="/signup" element={<Layout><Sign /></Layout>} />
+        <Route path="/sign" element={<Layout><Sign /></Layout>} />
         <Route path="/bookingconfirmation" element={<Layout><BookingConfirmation /></Layout>} />
         <Route path="/ticketstub" element={<Layout><TicketStub /></Layout>} />
+        <Route path="/my-tickets" element={<Layout><MyTickets /></Layout>} />
         <Route path="/promoters" element={<Layout><OrganizersPage /></Layout>} />
         <Route path="/buy-tickets" element={<Layout><BuyTicketsPage /></Layout>} />
         <Route path="/sell-ticket" element={<Layout><SellTicketPage /></Layout>} />
@@ -566,7 +539,10 @@ export default function App() {
         <Route path="/vendors" element={<Layout><VendorsPage /></Layout>} />
         <Route path="/paymentpanel" element={<Layout><PaymentPanel /></Layout>} />
         <Route path="/locationpicker" element={<Layout><LocationPicker /></Layout>} />
+        <Route path="/herosection" element={<Layout><HeroSection /></Layout>} />
         <Route path="/eventcalendar" element={<Layout><EventCalendar events={[]} /></Layout>} />
+        <Route path="/eventlocationpin" element={<Layout><EventLocationPin /></Layout>} />
+
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

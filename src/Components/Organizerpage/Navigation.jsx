@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "./Navigation.css"; // ← add this
+import "./Navigation.css"; 
 
 function Navigation() {
   const navigate = useNavigate();
@@ -26,8 +26,11 @@ function Navigation() {
 
       <div className="nav-links">
         <Link to="/events/">Events</Link>
-        <Link to="/promoters">Organizers</Link>
         <Link to="/blog">Blog</Link>
+        <Link to="/info">info</Link>
+        <Link to="/organizer">Organizers</Link>
+        <Link to="/instructions">instructions</Link>
+        <Link to="registration">registration</Link>
       </div>
 
       <div className="nav-actions">

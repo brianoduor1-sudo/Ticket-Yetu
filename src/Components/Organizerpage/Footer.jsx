@@ -4,11 +4,11 @@ function Footer() {
         <footer className="footer">
 
             
-            <div className="footer-brand">
+        <div className="footer-brand">
                 <div className="footer-logo">
                     <span className="logo-icon">🎟</span>
                     <h2>TicketYetu</h2>
-                </div>
+        </div>
 
                 <p>
                     The premier platform for discovering and
@@ -19,7 +19,7 @@ function Footer() {
                     © 2024 TicketYetu. All<br />
                     rights reserved.
                 </p>
-            </div>
+      </div>
 
 
             
@@ -29,7 +29,7 @@ function Footer() {
                 <a href="/events">Events</a>
                 <a href="/promoters">Promoters</a>
                 <a href="/vendors">Vendors</a>
-            </div>
+        </div>
 
 
             
@@ -39,7 +39,7 @@ function Footer() {
                 <a href="/buy-tickets">Buy Tickets</a>
                 <a href="/sell-ticket">Sell Your Ticket</a>
                 <a href="/faq">FAQ</a>
-            </div>
+        </div>
 
 
             
@@ -58,15 +58,15 @@ function Footer() {
                     />
 
                     <span>✉</span>
-                </div>
-
-                <button className="subscribe-btn">
+      </div>
+ 
+      <button className="subscribe-btn">
                     Subscribe
                 </button>
-            </div>
+      </div>
 
-        </footer>
-    );
+    </footer>
+  );
 }
 
 export default Footer;

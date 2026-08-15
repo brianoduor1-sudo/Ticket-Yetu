@@ -4,7 +4,8 @@
 // realistic MVP triggers: a booking being confirmed, and an organiser
 // changing something that affects people who already booked.
 
-import { storage } from '../data/storage';
+
+import { storage } from '../../data/storage';
 
 function uuid() {
   return 'ntf_' + Math.random().toString(36).slice(2, 10);
