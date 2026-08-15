@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { fetchEventById } from "./services/ticketmaster";
+import EventLocationPin from "../components/EventLocationPin.jsx";
+import EventMap from "../components/EventMap.jsx";
 
 export default function EventDetailsPage() {
   const { id } = useParams();
@@ -55,6 +57,19 @@ export default function EventDetailsPage() {
 
   const backLink = isSports ? "/events/sports" : "/events/entertainment";
 
+  // Build a { address, lat, lng } object from Ticketmaster's venue data,
+  // matching what EventLocationPin / EventMap expect. Ticketmaster returns
+  // lat/lng as strings, so parseFloat them. If the venue has no coordinates
+  // at all, location stays null and both components fall back gracefully
+  // (EventLocationPin renders nothing, EventMap shows a "no location" message).
+  const location = venue?.location
+    ? {
+        address: `${venue.name}${venue.city?.name ? ", " + venue.city.name : ""}`,
+        lat: parseFloat(venue.location.latitude),
+        lng: parseFloat(venue.location.longitude),
+      }
+    : null;
+
   return (
     <div
       style={{
@@ -75,6 +90,12 @@ export default function EventDetailsPage() {
         >
           ← Back to {isSports ? "Sports" : "Entertainment"}
         </Link>
+
+        {/* Pin + address link, jumps down to the map section below via
+            id="event-location" — only renders if location.address exists */}
+        <div style={{ marginTop: "12px" }}>
+          <EventLocationPin location={location} />
+        </div>
 
         <div
           style={{
@@ -186,6 +207,11 @@ export default function EventDetailsPage() {
             </div>
           </div>
         </div>
+
+        {/* Map section — id="event-location" is the scroll target for the
+            pin link above. Shows "no location set" message if the venue
+            didn't have coordinates. */}
+        <EventMap location={location} />
       </div>
     </div>
   );
