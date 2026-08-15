@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 
 // Event pages: fetch and display live event data from Ticketmaster API
 import SportsPage from "./Components/SportsPage.jsx";
@@ -37,7 +36,6 @@ import HeroSection from "./components/HeroSection.jsx";
 import EventCalendar from "./components/EventCalendar.jsx";
 import EventLocationPin from "./components/EventLocationPin.jsx";
 import CategoriesSection from "./components/CategoriesSection.jsx";
-import EventMap from "./components/EventMap.jsx";
 
 // ==========================================
 // LAYOUT
@@ -51,11 +49,7 @@ function Layout({ children }) {
     <>
       <Navigation />
       {children}
-<<<<<<< HEAD
       {showFooter && <Footer />}
-=======
-      <Footer />
->>>>>>> b8cb1d1c8528aeae0df2f8d1bad02cd0b38ceee3
     </>
   );
 }
@@ -160,35 +154,18 @@ function HomePage() {
 // ==========================================
 // EVENTS CATEGORY PAGE
 // ==========================================
-// "/events" hub page. Hero search box + category pills up top.
-//
-// On load, fetches BOTH sports and entertainment events so we can:
-//   (a) build the category pills from REAL genre values in the data
-//       (instead of hardcoded guesses like "FKF Premier League"),
-//   (b) filter and show matching events inline when a category is
-//       clicked, instead of just navigating away to another page.
-//
-// Typing a search debounces (waits 400ms after you stop typing) then
-// calls fetchEventsByKeyword and renders results as EventCards. A
-// search query takes priority over category filtering if both are
-// active — simplest behavior for now given the deadline.
 function EventsPage() {
-  const navigate = useNavigate();
-
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [searching, setSearching] = useState(false);
   const [searchError, setSearchError] = useState(null);
 
-  // All events fetched on page load (sports + entertainment combined),
-  // used to build category pills and to filter for the category view.
   const [allEvents, setAllEvents] = useState([]);
   const [loadingEvents, setLoadingEvents] = useState(true);
   const [eventsError, setEventsError] = useState(null);
 
   const [selectedCategory, setSelectedCategory] = useState("All");
 
-  // Fetch both event types once when the page loads.
   useEffect(() => {
     Promise.all([fetchSportsEvents(), fetchEntertainmentEvents()])
       .then(([sports, entertainment]) => {
@@ -198,11 +175,6 @@ function EventsPage() {
       .finally(() => setLoadingEvents(false));
   }, []);
 
-  // Build real category groups from the fetched events instead of
-  // guessing league/genre names. Ticketmaster events have
-  // classifications[0].segment.name (e.g. "Sports", "Music") and
-  // classifications[0].genre.name (e.g. "Football", "Rock").
-  // We group genres under their segment, and dedupe with a Set.
   const categoryGroups = useMemo(() => {
     const groups = {};
 
@@ -210,17 +182,14 @@ function EventsPage() {
       const segment = event.classifications?.[0]?.segment?.name;
       const genre = event.classifications?.[0]?.genre?.name;
 
-      if (!segment) return; // skip events with no classification data
+      if (!segment) return;
 
       if (!groups[segment]) groups[segment] = new Set();
-      // Ticketmaster sometimes uses "Undefined" as a placeholder genre —
-      // skip that, it's not a useful filter option.
       if (genre && genre !== "Undefined") {
         groups[segment].add(genre);
       }
     });
 
-    // Convert each Set to a sorted array for stable button order.
     const result = {};
     Object.entries(groups).forEach(([segment, genreSet]) => {
       result[segment] = Array.from(genreSet).sort();
@@ -228,10 +197,6 @@ function EventsPage() {
     return result;
   }, [allEvents]);
 
-  // Filters allEvents by the selected group/category name. Matches
-  // either the segment (e.g. "Sports") or a specific genre (e.g.
-  // "Football"), since a click on a childless group passes the
-  // group name itself as the category.
   const categoryFilteredEvents = useMemo(() => {
     if (selectedCategory === "All") return allEvents;
 
@@ -257,7 +222,7 @@ function EventsPage() {
         .finally(() => setSearching(false));
     }, 400);
 
-    return () => clearTimeout(timer); // cancel if user keeps typing
+    return () => clearTimeout(timer);
   }, [query]);
 
   const handleSearch = (value) => {
@@ -268,7 +233,6 @@ function EventsPage() {
     setSelectedCategory(category);
   };
 
-  // Search takes priority over category browsing if both are active.
   const showSearchResults = query.trim().length > 0;
 
   return (
@@ -276,7 +240,6 @@ function EventsPage() {
       <HeroSection onSearch={handleSearch} />
       <CategoriesSection groups={categoryGroups} onSelect={handleCategorySelect} />
 
-      {/* SEARCH RESULTS — shown when there's an active search query */}
       {showSearchResults && (
         <div style={{ padding: "20px 30px 40px", textAlign: "center" }}>
           {searching && <p style={{ color: "#cbd5e1" }}>Searching...</p>}
@@ -307,7 +270,6 @@ function EventsPage() {
         </div>
       )}
 
-      {/* CATEGORY-FILTERED EVENTS — shown when not searching */}
       {!showSearchResults && (
         <div style={{ padding: "20px 30px 60px" }}>
           {loadingEvents ? (
@@ -406,9 +368,6 @@ function OrganizersPage() {
 }
 
 // ==========================================
-<<<<<<< HEAD
-// APP
-=======
 // BUY TICKETS PAGE
 // ==========================================
 function BuyTicketsPage() {
@@ -553,268 +512,11 @@ function NotFound() {
 
 // ==========================================
 // APP (ROOT COMPONENT + ROUTER CONFIG)
->>>>>>> b8cb1d1c8528aeae0df2f8d1bad02cd0b38ceee3
 // ==========================================
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-<<<<<<< HEAD
-        {/* ================= HOME ================= */}
-
-        <Route
-          path="/"
-          element={
-            <Layout>
-              <HomePage />
-            </Layout>
-          }
-        />
-
-        {/* ================= EVENTS ================= */}
-
-        <Route
-          path="/events"
-          element={
-            <Layout>
-              <EventsPage />
-            </Layout>
-          }
-        />
-
-        {/* ================= SPORTS ================= */}
-
-        <Route
-          path="/events/sports"
-          element={
-            <Layout>
-              <SportsPage />
-            </Layout>
-          }
-        />
-
-        {/* ================= ENTERTAINMENT ================= */}
-
-        <Route
-          path="/events/entertainment"
-          element={
-            <Layout>
-              <EntertainmentPage />
-            </Layout>
-          }
-        />
-
-        {/* ================= EVENT DETAILS ================= */}
-
-        <Route
-          path="/events/:id"
-          element={
-            <Layout>
-              <EventDetailsPage />
-            </Layout>
-          }
-        />
-
-        {/* ================= BLOG ================= */}
-
-        <Route
-          path="/blog"
-          element={
-            <Layout>
-              <Blog />
-            </Layout>
-          }
-        />
-
-        {/* ================= HELP ================= */}
-
-        <Route
-          path="/help"
-          element={
-            <Layout>
-              <Help />
-            </Layout>
-          }
-        />
-
-        {/* ================= INFO ================= */}
-
-        <Route
-          path="/info"
-          element={
-            <Layout>
-              <Info />
-            </Layout>
-          }
-        />
-
-        {/* ================= INSTRUCTIONS ================= */}
-
-        <Route
-          path="/instructions"
-          element={
-            <Layout>
-              <Instructions />
-            </Layout>
-          }
-        />
-
-        {/* ================= REGISTRATION ================= */}
-
-        <Route
-          path="/registration"
-          element={
-            <Layout>
-              <Registration />
-            </Layout>
-          }
-        />
-
-        {/* ================= LOGIN ================= */}
-
-        <Route
-          path="/login"
-          element={
-            <Layout>
-              <Login />
-            </Layout>
-          }
-        />
-
-        {/* ================= SIGN UP ================= */}
-
-        <Route
-          path="/sign"
-          element={
-            <Layout>
-              <Sign />
-            </Layout>
-          }
-        />
-
-        {/* ================= BOOKING CONFIRMATION ================= */}
-
-        <Route
-          path="/bookingconfirmation"
-          element={
-            <Layout>
-              <BookingConfirmation />
-            </Layout>
-          }
-        />
-
-        {/* ================= TICKET STUB ================= */}
-
-        <Route
-          path="/ticketstub"
-          element={
-            <Layout>
-              <TicketStub />
-            </Layout>
-          }
-        />
-
-        {/* ================= My Tickets ===================*/}
-        
-        <Route
-          path="/my-tickets"
-          element={
-            <Layout>
-              <MyTickets />
-            </Layout>
-          }
-        />
-
-        {/* ================= ORGANIZERS ================= */}
-
-        <Route
-          path="/promoters"
-          element={
-            <Layout>
-              <div
-                style={{
-                  minHeight: "70vh",
-                  padding: "60px",
-                  color: "white",
-                  background: "#020617",
-                  textAlign: "center",
-                }}
-              >
-                <h1>Organizers</h1>
-              </div>
-            </Layout>
-          }
-        />
-
-        {/* ================= PAYMENT ================= */}
-
-        <Route
-          path="/paymentpanel"
-          element={
-            <Layout>
-              <PaymentPanel />
-            </Layout>
-          }
-        />
-
-        {/* ================= LOCATION PICKER ================= */}
-
-        <Route
-          path="/locationpicker"
-          element={
-            <Layout>
-              <LocationPicker />
-            </Layout>
-          }
-        />
-
-        {/* ================= HERO SECTION ================= */}
-
-        <Route
-          path="/herosection"
-          element={
-            <Layout>
-              <HeroSection />
-            </Layout>
-          }
-        />
-
-        {/* ================= EVENTS CALENDAR ================= */}
-
-        <Route
-          path="/eventcalendar"
-          element={
-            <Layout>
-              <EventsCalendar />
-            </Layout>
-          }
-        />
-
-        {/* ================= EVENT LOCATION ================= */}
-
-        <Route
-          path="/eventlocationpin"
-          element={
-            <Layout>
-              <EventLocationPin />
-            </Layout>
-          }
-        />
-
-        {/* ================= CATEGORIES ================= */}
-
-        <Route
-          path="/categories"
-          element={
-            <Layout>
-              <Categories />
-            </Layout>
-          }
-        />
-
-        {/* ================= 404 ================= */}
-
-=======
         <Route path="/" element={<Layout><HomePage /></Layout>} />
         <Route path="/events" element={<Layout><EventsPage /></Layout>} />
         <Route path="/events/sports" element={<Layout><SportsPage /></Layout>} />
@@ -826,9 +528,10 @@ export default function App() {
         <Route path="/instructions" element={<Layout><Instructions /></Layout>} />
         <Route path="/registration" element={<Layout><Registration /></Layout>} />
         <Route path="/login" element={<Layout><Login /></Layout>} />
-        <Route path="/signup" element={<Layout><Sign /></Layout>} />
+        <Route path="/sign" element={<Layout><Sign /></Layout>} />
         <Route path="/bookingconfirmation" element={<Layout><BookingConfirmation /></Layout>} />
         <Route path="/ticketstub" element={<Layout><TicketStub /></Layout>} />
+        <Route path="/my-tickets" element={<Layout><MyTickets /></Layout>} />
         <Route path="/promoters" element={<Layout><OrganizersPage /></Layout>} />
         <Route path="/buy-tickets" element={<Layout><BuyTicketsPage /></Layout>} />
         <Route path="/sell-ticket" element={<Layout><SellTicketPage /></Layout>} />
@@ -836,56 +539,12 @@ export default function App() {
         <Route path="/vendors" element={<Layout><VendorsPage /></Layout>} />
         <Route path="/paymentpanel" element={<Layout><PaymentPanel /></Layout>} />
         <Route path="/locationpicker" element={<Layout><LocationPicker /></Layout>} />
+        <Route path="/herosection" element={<Layout><HeroSection /></Layout>} />
         <Route path="/eventcalendar" element={<Layout><EventCalendar events={[]} /></Layout>} />
->>>>>>> b8cb1d1c8528aeae0df2f8d1bad02cd0b38ceee3
+        <Route path="/eventlocationpin" element={<Layout><EventLocationPin /></Layout>} />
+
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
-<<<<<<< HEAD
 }
-
-
-// ==========================================
-// 404 PAGE
-// ==========================================
-
-function NotFound() {
-  return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        flexDirection: "column",
-        textAlign: "center",
-
-        background: "radial-gradient(circle at top, #111827 0%, #020617 100%)",
-
-        color: "white",
-      }}
-    >
-      <h1
-        style={{
-          fontSize: "3rem",
-          marginBottom: "12px",
-        }}
-      >
-        404
-      </h1>
-
-      <p
-        style={{
-          color: "#cbd5e1",
-        }}
-      >
-        The page you are looking for does not exist.
-      </p>
-    </div>
-  );
-}
-
-=======
-}
->>>>>>> b8cb1d1c8528aeae0df2f8d1bad02cd0b38ceee3
