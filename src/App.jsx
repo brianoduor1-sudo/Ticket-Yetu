@@ -521,7 +521,6 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout><HomePage /></Layout>} />
-        <Route path="/test-booking" element={<Layout><TestBooking /></Layout>} />
         <Route path="/events" element={<Layout><EventsPage /></Layout>} />
         <Route path="/events/sports" element={<Layout><SportsPage /></Layout>} />
         <Route path="/events/entertainment" element={<Layout><EntertainmentPage /></Layout>} />
