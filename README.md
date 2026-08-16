@@ -49,7 +49,7 @@ A real booking flow, entirely client-side:
 4. Booking triggers an in-app notification
 5. View all booked tickets on `/my-tickets`
 
-Ticket inventory is tracked per event and genuinely enforced — you can't book more tickets than are available.
+Ticket inventory is tracked per event and genuinely enforced you can't book more tickets than are available.
 
 ### 🔔 Notifications
 An in-app notification system (bell icon with unread-count badge) triggers on booking confirmation, event updates, and event cancellations. Notifications persist in `localStorage`.
@@ -173,7 +173,7 @@ Everything is `localStorage`-based, no backend involved:
 * `ticketyetu_subscribers` — newsletter signups
 * User accounts and login sessions stored separately under their own keys
 
-There is a `dataIntegrityService` that can detect and repair drift between an event's stored `quantityBooked` and what its actual confirmed bookings add up to — useful since this kind of manual counter is a known race-condition risk once this moves off `localStorage` onto a real backend.
+There is a `dataIntegrityService` that can detect and repair drift between an event's stored `quantityBooked` and what its actual confirmed bookings add up to useful since this kind of manual counter is a known race-condition risk once this moves off `localStorage` onto a real backend.
 
 ## 🚀 How to Run the Project
 
@@ -205,9 +205,9 @@ Open the local URL shown in your terminal (typically `http://localhost:5173`).
 * **This is a frontend-only module.** All "backend" behavior (inventory, bookings, notifications, accounts) is simulated with `localStorage`. Data is device- and browser-specific, and is lost if storage is cleared.
 * Event data is a fixed set of mock events, not a live feed  same events every time the app is loaded.
 * Payment (M-Pesa/card) is fully simulated  no real payment gateway is called or ever will be from this module.
-* `DataManagementPage.jsx` (export/import/reset tooling) is built but **currently broken and not routed anywhere** — it imports `STORAGE_KEYS` and a `SCHEMA_VERSION` from files/exports that don't exist in the current `storage.js` (no `migrations.js` file exists, and `storage.js` doesn't export `STORAGE_KEYS`, `setOrganisers`, `setMeta`, or `getOrganisers`). Needs either those additions to `storage.js` or a rewrite of `dataManagementService.js` before it can be wired into a route.
-* `src/components` vs `src/Components`, and `src/Data` vs `src/data`, are duplicate/overlapping folders — cleanup needed before any case-sensitive deployment.
-* `src/Api/` (basketball.js, football.js, rugby.js, entertainment.js) and the `axios` dependency are dead code from an earlier approach — safe to delete.
+* `DataManagementPage.jsx` (export/import/reset tooling) is built but **currently broken and not routed anywhere** :it imports `STORAGE_KEYS` and a `SCHEMA_VERSION` from files/exports that don't exist in the current `storage.js` (no `migrations.js` file exists, and `storage.js` doesn't export `STORAGE_KEYS`, `setOrganisers`, `setMeta`, or `getOrganisers`). Needs either those additions to `storage.js` or a rewrite of `dataManagementService.js` before it can be wired into a route.
+* `src/components` vs `src/Components`, and `src/Data` vs `src/data`, are duplicate/overlapping folders :cleanup needed before any case-sensitive deployment.
+* `src/Api/` (basketball.js, football.js, rugby.js, entertainment.js) and the `axios` dependency are dead code from an earlier approach safe to delete.
 * Some pages (`Buy Tickets`, `Sell Your Ticket`, `FAQ`, `Vendors`) remain static placeholder content.
 
 ## 🗺️ Roadmap
