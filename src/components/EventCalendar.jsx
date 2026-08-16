@@ -1,108 +1,79 @@
 import { useState } from "react";
 import "./EventCalendar.css";
 
-// Displays events in a monthly calendar.
 export default function EventCalendar({ events = [], onSelectEvent }) {
-  const [currentDate, setCurrentDate] = useState(new Date());
+  // Keep track of the month being displayed
+  const [date, setDate] = useState(new Date());
 
-  // Auto-select today's date on first load (only makes sense since
-  // currentDate also starts as "now" — if the user navigates to a
-  // different month, selectedDay resets to null via goToNext/PreviousMonth).
-  const [selectedDay, setSelectedDay] = useState(
-    () => new Date().getDate()
-  );
+  // Keep track of the selected day
+  const [selectedDay, setSelectedDay] = useState(new Date().getDate());
 
-  const year = currentDate.getFullYear();
-  const month = currentDate.getMonth();
+  const year = date.getFullYear();
+  const month = date.getMonth();
 
-  const monthName = currentDate.toLocaleString("default", {
-    month: "long",
-    year: "numeric",
-  });
-
-  const firstDayOfMonth = new Date(year, month, 1);
-  const startingWeekday = firstDayOfMonth.getDay();
-
+  // Add empty spaces before the first day of the month
+  const startWeekday = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-  // Create calendar cells including empty days before the month starts.
-  const cells = [];
+  const cells = [
+    ...Array(startWeekday).fill(null),
+    ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
+  ];
 
-  for (let i = 0; i < startingWeekday; i++) {
-    cells.push(null);
-  }
-
-  for (let day = 1; day <= daysInMonth; day++) {
-    cells.push(day);
-  }
-
-  // Converts a calendar day into YYYY-MM-DD.
-  function formatDateKey(day) {
-    const mm = String(month + 1).padStart(2, "0");
-    const dd = String(day).padStart(2, "0");
-
-    return `${year}-${mm}-${dd}`;
-  }
-
-  // Finds events happening on a specific day.
-  function eventsOnDay(day) {
+  // Find events that happen on a specific day
+  const eventsOnDay = (day) => {
     if (!day) return [];
 
-    const dateKey = formatDateKey(day);
+    const dateKey = [
+      year,
+      String(month + 1).padStart(2, "0"),
+      String(day).padStart(2, "0"),
+    ].join("-");
 
-    // Real event objects store the date nested under dates.start.localDate,
-    // not a flat event.date field.
-    return events.filter((event) => event.dates?.start?.localDate === dateKey);
-  }
+    return events.filter(
+      (e) => e.dates?.start?.localDate === dateKey
+    );
+  };
 
-  function goToPreviousMonth() {
-    setCurrentDate(new Date(year, month - 1, 1));
+  // Move to the previous or next month
+  const changeMonth = (offset) => {
+    setDate(new Date(year, month + offset, 1));
     setSelectedDay(null);
-  }
+  };
 
-  function goToNextMonth() {
-    setCurrentDate(new Date(year, month + 1, 1));
-    setSelectedDay(null);
-  }
+  // Return the calendar to today's date
+  const goToToday = () => {
+    setDate(new Date());
+    setSelectedDay(new Date().getDate());
+  };
 
-  function goToToday() {
-    const now = new Date();
-    setCurrentDate(now);
-    setSelectedDay(now.getDate());
-  }
+  const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-  function handleDayClick(day) {
-    if (!day) return;
-
-    setSelectedDay(day);
-  }
-
-  const weekdayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-  const selectedDayEvents = selectedDay
-    ? eventsOnDay(selectedDay)
-    : [];
+  // Get events for the currently selected day
+  const selectedEvents = eventsOnDay(selectedDay);
 
   return (
     <div className="event-calendar-container">
       <div className="calendar-card">
 
-        {/* Calendar header */}
+        {/* Calendar header and navigation */}
         <div className="calendar-header">
           <button
-            type="button"
-            onClick={goToPreviousMonth}
+            onClick={() => changeMonth(-1)}
             className="calendar-nav-button"
-            aria-label="Previous month"
           >
             ‹
           </button>
 
           <div className="calendar-header-center">
-            <h2>{monthName}</h2>
-            {/* Jump back to the current month/day from anywhere */}
+            <h2>
+              {date.toLocaleString("default", {
+                month: "long",
+                year: "numeric",
+              })}
+            </h2>
+
             <button
-              type="button"
               onClick={goToToday}
               className="calendar-today-button"
             >
@@ -111,89 +82,61 @@ export default function EventCalendar({ events = [], onSelectEvent }) {
           </div>
 
           <button
-            type="button"
-            onClick={goToNextMonth}
+            onClick={() => changeMonth(1)}
             className="calendar-nav-button"
-            aria-label="Next month"
           >
             ›
           </button>
         </div>
 
-        {/* Weekday names */}
+        {/* Days of the week */}
         <div className="calendar-weekdays">
-          {weekdayLabels.map((label) => (
-            <div key={label} className="weekday">
-              {label}
+          {weekdays.map((d) => (
+            <div key={d} className="weekday">
+              {d}
             </div>
           ))}
         </div>
 
         {/* Calendar days */}
         <div className="calendar-grid">
-          {cells.map((day, index) => {
-            const dayEvents = day ? eventsOnDay(day) : [];
-            const isSelected = day === selectedDay;
-            const eventCount = dayEvents.length;
+          {cells.map((day, i) => (
+            <button
+              key={i}
+              disabled={!day}
+              onClick={() => day && setSelectedDay(day)}
+              className={`calendar-day ${
+                !day ? "empty-day" : ""
+              } ${day === selectedDay ? "selected-day" : ""}`}
+            >
+              {day}
 
-            return (
-              <button
-                key={`${day}-${index}`}
-                type="button"
-                disabled={!day}
-                onClick={() => handleDayClick(day)}
-                className={`calendar-day ${
-                  !day ? "empty-day" : ""
-                } ${isSelected ? "selected-day" : ""}`}
-              >
-                {day}
-
-                {/* Single event: small dot. Multiple events: count badge
-                    instead, so a busy day is visually distinguishable
-                    from a day with just one thing happening. */}
-                {eventCount === 1 && (
-                  <span
-                    className={`event-dot ${
-                      isSelected ? "selected-dot" : ""
-                    }`}
-                  />
-                )}
-
-                {eventCount > 1 && (
-                  <span
-                    className={`event-count-badge ${
-                      isSelected ? "selected-badge" : ""
-                    }`}
-                  >
-                    {eventCount}
-                  </span>
-                )}
-              </button>
-            );
-          })}
+              {/* Show a dot when there is an event on this day */}
+              {day && eventsOnDay(day).length > 0 && (
+                <span className="event-dot" />
+              )}
+            </button>
+          ))}
         </div>
 
-        {/* Selected day's events */}
+        {/* Show events for the selected day */}
         {selectedDay && (
           <div className="selected-events">
             <h3>
               Events on{" "}
-              {currentDate.toLocaleString("default", {
-                month: "long",
-              })}{" "}
+              {date.toLocaleString("default", { month: "long" })}{" "}
               {selectedDay}, {year}
             </h3>
 
-            {selectedDayEvents.length === 0 ? (
+            {selectedEvents.length === 0 ? (
               <p className="no-events">
                 No events on this day.
               </p>
             ) : (
               <div className="event-list">
-                {selectedDayEvents.map((event) => (
+                {selectedEvents.map((event) => (
                   <button
                     key={event.id}
-                    type="button"
                     className="calendar-event"
                     onClick={() => onSelectEvent?.(event)}
                   >

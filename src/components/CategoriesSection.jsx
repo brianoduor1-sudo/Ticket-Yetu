@@ -1,20 +1,6 @@
 import { useState } from "react";
 
-// ============================================================
-//
-// `groups` looks like:
-//   { Sports: ["Football", "Basketball"], Entertainment: ["Music"] }
-//
-// The parent component (EventsPage in App.jsx) builds this object
-// from REAL Ticketmaster event data, so every button here is
-// guaranteed to match an actual event.category value returned by
-// the API, not made-up league names.
-//
-// Every group button filters immediately on click, whether or not
-// it has children — clicking "Sports" shows all Sports events right
-// away. If it has children (e.g. Football, Rugby), those also show
-// up underneath so the user can narrow further from there.
-// ============================================================
+
 
 export default function CategoriesSection({ groups = {}, onSelect }) {
   const [activeGroup, setActiveGroup] = useState("All");
@@ -27,7 +13,7 @@ export default function CategoriesSection({ groups = {}, onSelect }) {
     setActiveGroup(group);
     setActiveCategory(null);
 
-    // Always notify the parent immediately — clicking a group (e.g.
+    // Always notify the parent immediately  clicking a group (e.g.
     // "Sports") should filter to that group right away, even if it
     // also has children (Football/Rugby) shown below for narrowing.
     onSelect?.(group);
