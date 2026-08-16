@@ -4,7 +4,7 @@
 
 ## 📌 Project Overview
 
-TicketYetu is a **frontend-only** event discovery and ticketing platform built for students. This module deliberately runs entirely in the browser — no backend server, no external API calls  using realistic mock event data and `localStorage` for all persistence (bookings  and notifications).
+TicketYetu is a **frontend-only** event discovery and ticketing platform built for students. This module deliberately runs entirely in the browser  no backend server, no external API calls  using realistic mock event data and `localStorage` for all persistence (bookings  and notifications).
 
 Users can browse events by category, search, view an event calendar, see venue locations on an interactive map, book tickets through a simulated checkout (including a simulated M-Pesa/card payment step), and view their booked tickets.
 
