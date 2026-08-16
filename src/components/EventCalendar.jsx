@@ -1,14 +1,19 @@
 import { useState } from "react";
+import "./EventCalendar.css";
 
-// Month calendar. Highlights days with events, click a day to list its events.
-// Receives events as a prop; does not fetch data itself.
+// Displays events in a monthly calendar.
+export default function EventCalendar({ events = [], onSelectEvent }) {
+  const [currentDate, setCurrentDate] = useState(new Date());
 
-export default function EventCalendar({ events, onSelectEvent }) {
-  const [currentDate, setCurrentDate] = useState(new Date()); // month/year in view
-  const [selectedDay, setSelectedDay] = useState(null); // clicked day number
+  // Auto-select today's date on first load (only makes sense since
+  // currentDate also starts as "now" — if the user navigates to a
+  // different month, selectedDay resets to null via goToNext/PreviousMonth).
+  const [selectedDay, setSelectedDay] = useState(
+    () => new Date().getDate()
+  );
 
   const year = currentDate.getFullYear();
-  const month = currentDate.getMonth(); // 0-indexed
+  const month = currentDate.getMonth();
 
   const monthName = currentDate.toLocaleString("default", {
     month: "long",
@@ -16,25 +21,38 @@ export default function EventCalendar({ events, onSelectEvent }) {
   });
 
   const firstDayOfMonth = new Date(year, month, 1);
-  const startingWeekday = firstDayOfMonth.getDay(); // leading blanks needed
+  const startingWeekday = firstDayOfMonth.getDay();
 
-  const daysInMonth = new Date(year, month + 1, 0).getDate(); // day 0 of next month = last day of this one
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-  // Build grid cells: blanks for padding, then day numbers
+  // Create calendar cells including empty days before the month starts.
   const cells = [];
-  for (let i = 0; i < startingWeekday; i++) cells.push(null);
-  for (let day = 1; day <= daysInMonth; day++) cells.push(day);
 
-  // day -> "YYYY-MM-DD" to match event.date format
+  for (let i = 0; i < startingWeekday; i++) {
+    cells.push(null);
+  }
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    cells.push(day);
+  }
+
+  // Converts a calendar day into YYYY-MM-DD.
   function formatDateKey(day) {
     const mm = String(month + 1).padStart(2, "0");
     const dd = String(day).padStart(2, "0");
+
     return `${year}-${mm}-${dd}`;
   }
 
+  // Finds events happening on a specific day.
   function eventsOnDay(day) {
+    if (!day) return [];
+
     const dateKey = formatDateKey(day);
-    return events.filter((event) => event.date === dateKey);
+
+    // Real event objects store the date nested under dates.start.localDate,
+    // not a flat event.date field.
+    return events.filter((event) => event.dates?.start?.localDate === dateKey);
   }
 
   function goToPreviousMonth() {
@@ -47,90 +65,147 @@ export default function EventCalendar({ events, onSelectEvent }) {
     setSelectedDay(null);
   }
 
+  function goToToday() {
+    const now = new Date();
+    setCurrentDate(now);
+    setSelectedDay(now.getDate());
+  }
+
   function handleDayClick(day) {
-    if (!day) return; // ignore blank cells
+    if (!day) return;
+
     setSelectedDay(day);
   }
 
   const weekdayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const selectedDayEvents = selectedDay ? eventsOnDay(selectedDay) : [];
+
+  const selectedDayEvents = selectedDay
+    ? eventsOnDay(selectedDay)
+    : [];
 
   return (
-    <div className="mx-auto max-w-md rounded-lg bg-white p-6 shadow-lg">
-      {/* Month nav */}
-      <div className="mb-4 flex items-center justify-between">
-        <button onClick={goToPreviousMonth} className="px-3 py-1 text-violet-600 hover:bg-violet-100 rounded">
-          &lsaquo;
-        </button>
-        <h2 className="text-lg font-bold text-gray-900">{monthName}</h2>
-        <button onClick={goToNextMonth} className="px-3 py-1 text-violet-600 hover:bg-violet-100 rounded">
-          &rsaquo;
-        </button>
-      </div>
+    <div className="event-calendar-container">
+      <div className="calendar-card">
 
-      {/* Weekday header */}
-      <div className="mb-2 grid grid-cols-7">
-        {weekdayLabels.map((label) => (
-          <div key={label} className="text-center text-xs font-semibold uppercase text-gray-400">
-            {label}
-          </div>
-        ))}
-      </div>
+        {/* Calendar header */}
+        <div className="calendar-header">
+          <button
+            type="button"
+            onClick={goToPreviousMonth}
+            className="calendar-nav-button"
+            aria-label="Previous month"
+          >
+            ‹
+          </button>
 
-      {/* Calendar grid */}
-      <div className="grid grid-cols-7 gap-1">
-        {cells.map((day, index) => {
-          const dayEvents = day ? eventsOnDay(day) : [];
-          const isSelected = day === selectedDay;
-
-          return (
+          <div className="calendar-header-center">
+            <h2>{monthName}</h2>
+            {/* Jump back to the current month/day from anywhere */}
             <button
-              key={index}
-              onClick={() => handleDayClick(day)}
-              disabled={!day}
-              className={`relative aspect-square rounded-lg text-sm flex items-center justify-center transition ${
-                !day
-                  ? "bg-transparent"
-                  : isSelected
-                  ? "bg-violet-600 text-white"
-                  : "bg-gray-50 hover:bg-violet-100 text-gray-900"
-              }`}
+              type="button"
+              onClick={goToToday}
+              className="calendar-today-button"
             >
-              {day}
-              {/* event indicator dot */}
-              {dayEvents.length > 0 && (
-                <span className={`absolute bottom-1 h-1.5 w-1.5 rounded-full ${isSelected ? "bg-white" : "bg-violet-600"}`} />
-              )}
+              Today
             </button>
-          );
-        })}
-      </div>
+          </div>
 
-      {/* Event list for selected day */}
-      {selectedDay && (
-        <div className="mt-5 border-t pt-4">
-          <h3 className="mb-2 text-sm font-semibold text-gray-900">
-            Events on {currentDate.toLocaleString("default", { month: "long" })} {selectedDay}, {year}
-          </h3>
-
-          {selectedDayEvents.length === 0 ? (
-            <p className="text-sm text-gray-400">No events on this day.</p>
-          ) : (
-            <ul className="space-y-2">
-              {selectedDayEvents.map((event) => (
-                <li key={event.id}>
-                  <button
-                    onClick={() => onSelectEvent?.(event)}
-                    className="w-full rounded-lg border border-gray-200 p-2 text-left text-sm hover:border-violet-600 hover:text-violet-600"
-                  >
-                    {event.name}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
+          <button
+            type="button"
+            onClick={goToNextMonth}
+            className="calendar-nav-button"
+            aria-label="Next month"
+          >
+            ›
+          </button>
         </div>
-      )}
+
+        {/* Weekday names */}
+        <div className="calendar-weekdays">
+          {weekdayLabels.map((label) => (
+            <div key={label} className="weekday">
+              {label}
+            </div>
+          ))}
+        </div>
+
+        {/* Calendar days */}
+        <div className="calendar-grid">
+          {cells.map((day, index) => {
+            const dayEvents = day ? eventsOnDay(day) : [];
+            const isSelected = day === selectedDay;
+            const eventCount = dayEvents.length;
+
+            return (
+              <button
+                key={`${day}-${index}`}
+                type="button"
+                disabled={!day}
+                onClick={() => handleDayClick(day)}
+                className={`calendar-day ${
+                  !day ? "empty-day" : ""
+                } ${isSelected ? "selected-day" : ""}`}
+              >
+                {day}
+
+                {/* Single event: small dot. Multiple events: count badge
+                    instead, so a busy day is visually distinguishable
+                    from a day with just one thing happening. */}
+                {eventCount === 1 && (
+                  <span
+                    className={`event-dot ${
+                      isSelected ? "selected-dot" : ""
+                    }`}
+                  />
+                )}
+
+                {eventCount > 1 && (
+                  <span
+                    className={`event-count-badge ${
+                      isSelected ? "selected-badge" : ""
+                    }`}
+                  >
+                    {eventCount}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Selected day's events */}
+        {selectedDay && (
+          <div className="selected-events">
+            <h3>
+              Events on{" "}
+              {currentDate.toLocaleString("default", {
+                month: "long",
+              })}{" "}
+              {selectedDay}, {year}
+            </h3>
+
+            {selectedDayEvents.length === 0 ? (
+              <p className="no-events">
+                No events on this day.
+              </p>
+            ) : (
+              <div className="event-list">
+                {selectedDayEvents.map((event) => (
+                  <button
+                    key={event.id}
+                    type="button"
+                    className="calendar-event"
+                    onClick={() => onSelectEvent?.(event)}
+                  >
+                    <span>{event.name}</span>
+                    <span className="event-arrow">→</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

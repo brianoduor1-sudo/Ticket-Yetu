@@ -1,18 +1,24 @@
 import { useState, useEffect, useMemo } from "react";
-import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
 
-// Event pages: fetch and display live event data from Ticketmaster API
+// Event pages and event data services
 import SportsPage from "./Components/SportsPage.jsx";
 import EntertainmentPage from "./Components/EntertainmentPage.jsx";
 import EventDetailsPage from "./Components/EventDetailsPage.jsx";
 import EventCard from "./Components/EventCard.jsx";
 import {
-  fetchEventsByKeyword,
+  smartSearchEvents,
   fetchSportsEvents,
   fetchEntertainmentEvents,
 } from "./Components/services/ticketmaster.js";
 
-// Organizer-side pages (nav, auth, static content)
+// Organizer pages
 import Navigation from "./Components/Organizerpage/Navigation.jsx";
 import Blog from "./Components/Organizerpage/Blog.jsx";
 import Help from "./Components/Organizerpage/Help.jsx";
@@ -23,29 +29,32 @@ import Login from "./Components/Organizerpage/Login.jsx";
 import Sign from "./Components/Organizerpage/Sign.jsx";
 import Footer from "./Components/Organizerpage/Footer.jsx";
 
-// Booking flow: shown after a user picks an event to purchase tickets
+// Booking and ticket pages
 import { BookingConfirmation } from "./Components/booking/BookingConfirmation.jsx";
 import { TicketStub } from "./Components/booking/TicketStub.jsx";
 import { PaymentPanel } from "./Components/booking/PaymentPanel.jsx";
-import { BookingForm } from "./Components/booking/BookingForm.jsx";
-import { storage } from "./data/storage.js";
-import { eventService } from "./Components/services/eventService.js";
 import MyTickets from "./Components/tickets/MyTickets.jsx";
 
-// Event browsing/discovery components — NOTE: lowercase "components" folder,
-// separate from the capital "Components" folder imported above
+// Event discovery components
 import LocationPicker from "./components/LocationPicker.jsx";
 import HeroSection from "./components/HeroSection.jsx";
 import EventCalendar from "./components/EventCalendar.jsx";
 import EventLocationPin from "./components/EventLocationPin.jsx";
 import CategoriesSection from "./components/CategoriesSection.jsx";
+// Calendar styling
+import "./components/EventCalendar.css";
 
-// ==========================================
+
+// ============================================================
 // LAYOUT
-// ==========================================
+// ============================================================
+
 function Layout({ children }) {
   const location = useLocation();
+
+  // These pages do not display the footer.
   const hideFooterOn = ["/info", "/instructions", "/registration"];
+
   const showFooter = !hideFooterOn.includes(location.pathname);
 
   return (
@@ -57,9 +66,10 @@ function Layout({ children }) {
   );
 }
 
-// ==========================================
+// ============================================================
 // HOME PAGE
-// ==========================================
+// ============================================================
+
 function HomePage() {
   const navigate = useNavigate();
 
@@ -82,12 +92,62 @@ function HomePage() {
         color: "white",
       }}
     >
-      <div style={{ position: "absolute", top: "18%", left: "12%", fontSize: "70px", opacity: 0.08 }}>⚽</div>
-      <div style={{ position: "absolute", top: "25%", right: "12%", fontSize: "70px", opacity: 0.08 }}>🎵</div>
-      <div style={{ position: "absolute", bottom: "15%", left: "20%", fontSize: "60px", opacity: 0.07 }}>🏆</div>
-      <div style={{ position: "absolute", bottom: "18%", right: "20%", fontSize: "60px", opacity: 0.07 }}>🎤</div>
+      <div
+        style={{
+          position: "absolute",
+          top: "18%",
+          left: "12%",
+          fontSize: "70px",
+          opacity: 0.08,
+        }}
+      >
+        ⚽
+      </div>
 
-      <h1 style={{ fontSize: "4rem", marginBottom: "16px", position: "relative", zIndex: 2 }}>
+      <div
+        style={{
+          position: "absolute",
+          top: "25%",
+          right: "12%",
+          fontSize: "70px",
+          opacity: 0.08,
+        }}
+      >
+        🎵
+      </div>
+
+      <div
+        style={{
+          position: "absolute",
+          bottom: "15%",
+          left: "20%",
+          fontSize: "60px",
+          opacity: 0.07,
+        }}
+      >
+        🏆
+      </div>
+
+      <div
+        style={{
+          position: "absolute",
+          bottom: "18%",
+          right: "20%",
+          fontSize: "60px",
+          opacity: 0.07,
+        }}
+      >
+        🎤
+      </div>
+
+      <h1
+        style={{
+          fontSize: "4rem",
+          marginBottom: "16px",
+          position: "relative",
+          zIndex: 2,
+        }}
+      >
         🎟️ Ticket Yetu
       </h1>
 
@@ -154,9 +214,10 @@ function HomePage() {
   );
 }
 
-// ==========================================
-// EVENTS CATEGORY PAGE
-// ==========================================
+// ============================================================
+// EVENTS PAGE
+// ============================================================
+
 function EventsPage() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
@@ -169,15 +230,21 @@ function EventsPage() {
 
   const [selectedCategory, setSelectedCategory] = useState("All");
 
+  // Load sports and entertainment events.
   useEffect(() => {
     Promise.all([fetchSportsEvents(), fetchEntertainmentEvents()])
       .then(([sports, entertainment]) => {
         setAllEvents([...sports, ...entertainment]);
       })
-      .catch((err) => setEventsError(err.message))
-      .finally(() => setLoadingEvents(false));
+      .catch((err) => {
+        setEventsError(err.message);
+      })
+      .finally(() => {
+        setLoadingEvents(false);
+      });
   }, []);
 
+  // Build category options from event classifications.
   const categoryGroups = useMemo(() => {
     const groups = {};
 
@@ -187,42 +254,61 @@ function EventsPage() {
 
       if (!segment) return;
 
-      if (!groups[segment]) groups[segment] = new Set();
+      if (!groups[segment]) {
+        groups[segment] = new Set();
+      }
+
       if (genre && genre !== "Undefined") {
         groups[segment].add(genre);
       }
     });
 
     const result = {};
+
     Object.entries(groups).forEach(([segment, genreSet]) => {
       result[segment] = Array.from(genreSet).sort();
     });
+
     return result;
   }, [allEvents]);
 
+  // Filter events by selected category.
   const categoryFilteredEvents = useMemo(() => {
-    if (selectedCategory === "All") return allEvents;
+    if (selectedCategory === "All") {
+      return allEvents;
+    }
 
     return allEvents.filter((event) => {
       const segment = event.classifications?.[0]?.segment?.name;
       const genre = event.classifications?.[0]?.genre?.name;
+
       return segment === selectedCategory || genre === selectedCategory;
     });
   }, [allEvents, selectedCategory]);
 
+  // Search events after the user stops typing.
   useEffect(() => {
     if (!query.trim()) {
       setResults([]);
       setSearchError(null);
+      setSearching(false);
       return;
     }
 
     setSearching(true);
+    setSearchError(null);
+
     const timer = setTimeout(() => {
-      fetchEventsByKeyword(query)
-        .then(setResults)
-        .catch((err) => setSearchError(err.message))
-        .finally(() => setSearching(false));
+      smartSearchEvents(query)
+        .then((events) => {
+          setResults(events);
+        })
+        .catch((err) => {
+          setSearchError(err.message);
+        })
+        .finally(() => {
+          setSearching(false);
+        });
     }, 400);
 
     return () => clearTimeout(timer);
@@ -241,25 +327,44 @@ function EventsPage() {
   return (
     <div>
       <HeroSection onSearch={handleSearch} />
-      <CategoriesSection groups={categoryGroups} onSelect={handleCategorySelect} />
 
+      <CategoriesSection
+        groups={categoryGroups}
+        onSelect={handleCategorySelect}
+      />
+
+      {/* Search results */}
       {showSearchResults && (
-        <div style={{ padding: "20px 30px 40px", textAlign: "center" }}>
-          {searching && <p style={{ color: "#cbd5e1" }}>Searching...</p>}
+        <div
+          style={{
+            padding: "20px 30px 40px",
+            textAlign: "center",
+          }}
+        >
+          {searching && (
+            <p style={{ color: "#cbd5e1" }}>
+              Searching for "{query}"...
+            </p>
+          )}
 
           {searchError && (
-            <p style={{ color: "#f87171" }}>Search failed: {searchError}</p>
+            <p style={{ color: "#f87171" }}>
+              Search failed: {searchError}
+            </p>
           )}
 
           {!searching && !searchError && results.length === 0 && (
-            <p style={{ color: "#cbd5e1" }}>No events found for "{query}".</p>
+            <p style={{ color: "#cbd5e1" }}>
+              No events found for "{query}".
+            </p>
           )}
 
-          {!searching && results.length > 0 && (
+          {!searching && !searchError && results.length > 0 && (
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                gridTemplateColumns:
+                  "repeat(auto-fit, minmax(280px, 1fr))",
                 gap: "24px",
                 maxWidth: "1100px",
                 margin: "0 auto",
@@ -273,25 +378,42 @@ function EventsPage() {
         </div>
       )}
 
+      {/* Normal event listing */}
       {!showSearchResults && (
         <div style={{ padding: "20px 30px 60px" }}>
           {loadingEvents ? (
-            <p style={{ color: "#cbd5e1", textAlign: "center" }}>
+            <p
+              style={{
+                color: "#cbd5e1",
+                textAlign: "center",
+              }}
+            >
               Loading events...
             </p>
           ) : eventsError ? (
-            <p style={{ color: "#f87171", textAlign: "center" }}>
+            <p
+              style={{
+                color: "#f87171",
+                textAlign: "center",
+              }}
+            >
               Failed to load events: {eventsError}
             </p>
           ) : categoryFilteredEvents.length === 0 ? (
-            <p style={{ color: "#cbd5e1", textAlign: "center" }}>
+            <p
+              style={{
+                color: "#cbd5e1",
+                textAlign: "center",
+              }}
+            >
               No events found in this category yet.
             </p>
           ) : (
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                gridTemplateColumns:
+                  "repeat(auto-fit, minmax(280px, 1fr))",
                 gap: "24px",
                 maxWidth: "1100px",
                 margin: "0 auto",
@@ -308,14 +430,124 @@ function EventsPage() {
   );
 }
 
-// ==========================================
+// ============================================================
+// CALENDAR PAGE
+// ============================================================
+
+function CalendarPage() {
+  const navigate = useNavigate();
+
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Load the same mock events used by the application.
+  useEffect(() => {
+    Promise.all([fetchSportsEvents(), fetchEntertainmentEvents()])
+      .then(([sports, entertainment]) => {
+        const combinedEvents = [...sports, ...entertainment];
+
+        // Remove duplicate events if both lists contain the same event.
+        const uniqueEvents = Array.from(
+          new Map(combinedEvents.map((event) => [event.id, event])).values()
+        );
+
+        setEvents(uniqueEvents);
+      })
+      .catch((err) => {
+        setError(err.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+
+  // Open the event details page when a calendar event is clicked.
+  const handleSelectEvent = (event) => {
+    navigate(`/events/${event.id}`);
+  };
+
+  return (
+    <div
+      style={{
+        minHeight: "70vh",
+        padding: "30px 20px 60px",
+        background:
+          "radial-gradient(circle at top, #1e1b4b 0%, #0f172a 50%, #020617 100%)",
+      }}
+    >
+      <div
+        style={{
+          maxWidth: "1000px",
+          margin: "0 auto 25px",
+          textAlign: "center",
+          color: "white",
+        }}
+      >
+        <h1
+          style={{
+            fontSize: "2.5rem",
+            marginBottom: "10px",
+          }}
+        >
+          📅 Event Calendar
+        </h1>
+
+        <p style={{ color: "#cbd5e1" }}>
+          Browse upcoming sports and entertainment events by date.
+        </p>
+      </div>
+
+      {loading && (
+        <p
+          style={{
+            textAlign: "center",
+            color: "#cbd5e1",
+          }}
+        >
+          Loading calendar events...
+        </p>
+      )}
+
+      {error && (
+        <p
+          style={{
+            textAlign: "center",
+            color: "#f87171",
+          }}
+        >
+          Failed to load calendar events: {error}
+        </p>
+      )}
+
+      {!loading && !error && (
+        <EventCalendar
+          events={events}
+          onSelectEvent={handleSelectEvent}
+        />
+      )}
+    </div>
+  );
+}
+
+// ============================================================
 // ORGANIZERS PAGE
-// ==========================================
+// ============================================================
+
 function OrganizersPage() {
   const organizers = [
-    { name: "Neon Nights Productions", desc: "Festivals & music events across East Africa." },
-    { name: "PitchSide Sports", desc: "Football, rugby, and athletics event management." },
-    { name: "Urban Culture Collective", desc: "Comedy shows, art, and community festivals." },
+    {
+      name: "Neon Nights Productions",
+      desc: "Festivals & music events across East Africa.",
+    },
+    {
+      name: "PitchSide Sports",
+      desc: "Football, rugby, and athletics event management.",
+    },
+    {
+      name: "Urban Culture Collective",
+      desc: "Comedy shows, art, and community festivals.",
+    },
   ];
 
   return (
@@ -324,11 +556,20 @@ function OrganizersPage() {
         minHeight: "70vh",
         padding: "60px 30px",
         color: "white",
-        background: "radial-gradient(circle at top, #1e1b4b 0%, #0f172a 50%, #020617 100%)",
+        background:
+          "radial-gradient(circle at top, #1e1b4b 0%, #0f172a 50%, #020617 100%)",
         textAlign: "center",
       }}
     >
-      <h1 style={{ fontSize: "3rem", marginBottom: "15px" }}>🎤 Meet Our Organizers</h1>
+      <h1
+        style={{
+          fontSize: "3rem",
+          marginBottom: "15px",
+        }}
+      >
+        🎤 Meet Our Organizers
+      </h1>
+
       <p
         style={{
           color: "#cbd5e1",
@@ -345,7 +586,8 @@ function OrganizersPage() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+          gridTemplateColumns:
+            "repeat(auto-fit, minmax(260px, 1fr))",
           gap: "30px",
           maxWidth: "900px",
           margin: "0 auto",
@@ -361,8 +603,23 @@ function OrganizersPage() {
               border: "1px solid #334155",
             }}
           >
-            <h2 style={{ fontSize: "1.4rem", marginBottom: "10px" }}>{org.name}</h2>
-            <p style={{ color: "#cbd5e1", lineHeight: 1.6 }}>{org.desc}</p>
+            <h2
+              style={{
+                fontSize: "1.4rem",
+                marginBottom: "10px",
+              }}
+            >
+              {org.name}
+            </h2>
+
+            <p
+              style={{
+                color: "#cbd5e1",
+                lineHeight: 1.6,
+              }}
+            >
+              {org.desc}
+            </p>
           </div>
         ))}
       </div>
@@ -370,9 +627,10 @@ function OrganizersPage() {
   );
 }
 
-// ==========================================
+// ============================================================
 // BUY TICKETS PAGE
-// ==========================================
+// ============================================================
+
 function BuyTicketsPage() {
   return (
     <div
@@ -380,12 +638,28 @@ function BuyTicketsPage() {
         minHeight: "70vh",
         padding: "60px 30px",
         color: "white",
-        background: "radial-gradient(circle at top, #1e1b4b 0%, #0f172a 50%, #020617 100%)",
+        background:
+          "radial-gradient(circle at top, #1e1b4b 0%, #0f172a 50%, #020617 100%)",
         textAlign: "center",
       }}
     >
-      <h1 style={{ fontSize: "3rem", marginBottom: "15px" }}>🎫 Buy Tickets</h1>
-      <p style={{ color: "#cbd5e1", fontSize: "1.1rem", maxWidth: "600px", margin: "0 auto" }}>
+      <h1
+        style={{
+          fontSize: "3rem",
+          marginBottom: "15px",
+        }}
+      >
+        🎫 Buy Tickets
+      </h1>
+
+      <p
+        style={{
+          color: "#cbd5e1",
+          fontSize: "1.1rem",
+          maxWidth: "600px",
+          margin: "0 auto",
+        }}
+      >
         Browse our upcoming sports and entertainment events, then secure your
         spot in just a few clicks.
       </p>
@@ -393,9 +667,10 @@ function BuyTicketsPage() {
   );
 }
 
-// ==========================================
+// ============================================================
 // SELL TICKET PAGE
-// ==========================================
+// ============================================================
+
 function SellTicketPage() {
   return (
     <div
@@ -403,12 +678,28 @@ function SellTicketPage() {
         minHeight: "70vh",
         padding: "60px 30px",
         color: "white",
-        background: "radial-gradient(circle at top, #1e1b4b 0%, #0f172a 50%, #020617 100%)",
+        background:
+          "radial-gradient(circle at top, #1e1b4b 0%, #0f172a 50%, #020617 100%)",
         textAlign: "center",
       }}
     >
-      <h1 style={{ fontSize: "3rem", marginBottom: "15px" }}>💵 Sell Your Ticket</h1>
-      <p style={{ color: "#cbd5e1", fontSize: "1.1rem", maxWidth: "600px", margin: "0 auto" }}>
+      <h1
+        style={{
+          fontSize: "3rem",
+          marginBottom: "15px",
+        }}
+      >
+        💵 Sell Your Ticket
+      </h1>
+
+      <p
+        style={{
+          color: "#cbd5e1",
+          fontSize: "1.1rem",
+          maxWidth: "600px",
+          margin: "0 auto",
+        }}
+      >
         Can't make it to an event anymore? List your ticket here and pass it
         on to someone who can.
       </p>
@@ -416,9 +707,10 @@ function SellTicketPage() {
   );
 }
 
-// ==========================================
+// ============================================================
 // FAQ PAGE
-// ==========================================
+// ============================================================
+
 function FaqPage() {
   const faqs = [
     {
@@ -441,12 +733,27 @@ function FaqPage() {
         minHeight: "70vh",
         padding: "60px 30px",
         color: "white",
-        background: "radial-gradient(circle at top, #1e1b4b 0%, #0f172a 50%, #020617 100%)",
+        background:
+          "radial-gradient(circle at top, #1e1b4b 0%, #0f172a 50%, #020617 100%)",
         textAlign: "center",
       }}
     >
-      <h1 style={{ fontSize: "3rem", marginBottom: "30px" }}>❓ Frequently Asked Questions</h1>
-      <div style={{ maxWidth: "700px", margin: "0 auto", textAlign: "left" }}>
+      <h1
+        style={{
+          fontSize: "3rem",
+          marginBottom: "30px",
+        }}
+      >
+        ❓ Frequently Asked Questions
+      </h1>
+
+      <div
+        style={{
+          maxWidth: "700px",
+          margin: "0 auto",
+          textAlign: "left",
+        }}
+      >
         {faqs.map((item) => (
           <div
             key={item.q}
@@ -458,8 +765,22 @@ function FaqPage() {
               border: "1px solid #334155",
             }}
           >
-            <h3 style={{ marginBottom: "8px" }}>{item.q}</h3>
-            <p style={{ color: "#cbd5e1", lineHeight: 1.6 }}>{item.a}</p>
+            <h3
+              style={{
+                marginBottom: "8px",
+              }}
+            >
+              {item.q}
+            </h3>
+
+            <p
+              style={{
+                color: "#cbd5e1",
+                lineHeight: 1.6,
+              }}
+            >
+              {item.a}
+            </p>
           </div>
         ))}
       </div>
@@ -467,9 +788,10 @@ function FaqPage() {
   );
 }
 
-// ==========================================
+// ============================================================
 // VENDORS PAGE
-// ==========================================
+// ============================================================
+
 function VendorsPage() {
   return (
     <div
@@ -477,12 +799,28 @@ function VendorsPage() {
         minHeight: "70vh",
         padding: "60px 30px",
         color: "white",
-        background: "radial-gradient(circle at top, #1e1b4b 0%, #0f172a 50%, #020617 100%)",
+        background:
+          "radial-gradient(circle at top, #1e1b4b 0%, #0f172a 50%, #020617 100%)",
         textAlign: "center",
       }}
     >
-      <h1 style={{ fontSize: "3rem", marginBottom: "15px" }}>🛍️ Vendors</h1>
-      <p style={{ color: "#cbd5e1", fontSize: "1.1rem", maxWidth: "600px", margin: "0 auto" }}>
+      <h1
+        style={{
+          fontSize: "3rem",
+          marginBottom: "15px",
+        }}
+      >
+        🛍️ Vendors
+      </h1>
+
+      <p
+        style={{
+          color: "#cbd5e1",
+          fontSize: "1.1rem",
+          maxWidth: "600px",
+          margin: "0 auto",
+        }}
+      >
         Vendor partnerships and marketplace listings are coming soon. Check
         back for updates.
       </p>
@@ -490,9 +828,10 @@ function VendorsPage() {
   );
 }
 
-// ==========================================
+// ============================================================
 // 404 PAGE
-// ==========================================
+// ============================================================
+
 function NotFound() {
   return (
     <div
@@ -503,49 +842,267 @@ function NotFound() {
         justifyContent: "center",
         flexDirection: "column",
         textAlign: "center",
-        background: "radial-gradient(circle at top, #111827 0%, #020617 100%)",
+        background:
+          "radial-gradient(circle at top, #111827 0%, #020617 100%)",
         color: "white",
       }}
     >
-      <h1 style={{ fontSize: "3rem", marginBottom: "12px" }}>404</h1>
-      <p style={{ color: "#cbd5e1" }}>The page you are looking for does not exist.</p>
+      <h1
+        style={{
+          fontSize: "3rem",
+          marginBottom: "12px",
+        }}
+      >
+        404
+      </h1>
+
+      <p style={{ color: "#cbd5e1" }}>
+        The page you are looking for does not exist.
+      </p>
     </div>
   );
 }
 
-// ==========================================
-// APP (ROOT COMPONENT + ROUTER CONFIG)
-// ==========================================
+// ============================================================
+// APP ROUTES
+// ============================================================
+
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Layout><HomePage /></Layout>} />
-        <Route path="/events" element={<Layout><EventsPage /></Layout>} />
-        <Route path="/events/sports" element={<Layout><SportsPage /></Layout>} />
-        <Route path="/events/entertainment" element={<Layout><EntertainmentPage /></Layout>} />
-        <Route path="/events/:id" element={<Layout><EventDetailsPage /></Layout>} />
-        <Route path="/blog" element={<Layout><Blog /></Layout>} />
-        <Route path="/help" element={<Layout><Help /></Layout>} />
-        <Route path="/info" element={<Layout><Info /></Layout>} />
-        <Route path="/instructions" element={<Layout><Instructions /></Layout>} />
-        <Route path="/registration" element={<Layout><Registration /></Layout>} />
-        <Route path="/login" element={<Layout><Login /></Layout>} />
-        <Route path="/sign" element={<Layout><Sign /></Layout>} />
-        <Route path="/bookingconfirmation" element={<Layout><BookingConfirmation /></Layout>} />
-        <Route path="/ticketstub" element={<Layout><TicketStub /></Layout>} />
-        <Route path="/my-tickets" element={<Layout><MyTickets /></Layout>} />
-        <Route path="/promoters" element={<Layout><OrganizersPage /></Layout>} />
-        <Route path="/buy-tickets" element={<Layout><BuyTicketsPage /></Layout>} />
-        <Route path="/sell-ticket" element={<Layout><SellTicketPage /></Layout>} />
-        <Route path="/faq" element={<Layout><FaqPage /></Layout>} />
-        <Route path="/vendors" element={<Layout><VendorsPage /></Layout>} />
-        <Route path="/paymentpanel" element={<Layout><PaymentPanel /></Layout>} />
-        <Route path="/locationpicker" element={<Layout><LocationPicker /></Layout>} />
-        <Route path="/herosection" element={<Layout><HeroSection /></Layout>} />
-        <Route path="/eventcalendar" element={<Layout><EventCalendar events={[]} /></Layout>} />
-        <Route path="/eventlocationpin" element={<Layout><EventLocationPin /></Layout>} />
+        {/* Main pages */}
+        <Route
+          path="/"
+          element={
+            <Layout>
+              <HomePage />
+            </Layout>
+          }
+        />
 
+        <Route
+          path="/events"
+          element={
+            <Layout>
+              <EventsPage />
+            </Layout>
+          }
+        />
+
+        <Route
+          path="/events/sports"
+          element={
+            <Layout>
+              <SportsPage />
+            </Layout>
+          }
+        />
+
+        <Route
+          path="/events/entertainment"
+          element={
+            <Layout>
+              <EntertainmentPage />
+            </Layout>
+          }
+        />
+
+        <Route
+          path="/events/:id"
+          element={
+            <Layout>
+              <EventDetailsPage />
+            </Layout>
+          }
+        />
+
+        {/* Organizer pages */}
+        <Route
+          path="/blog"
+          element={
+            <Layout>
+              <Blog />
+            </Layout>
+          }
+        />
+
+        <Route
+          path="/help"
+          element={
+            <Layout>
+              <Help />
+            </Layout>
+          }
+        />
+
+        <Route
+          path="/info"
+          element={
+            <Layout>
+              <Info />
+            </Layout>
+          }
+        />
+
+        <Route
+          path="/instructions"
+          element={
+            <Layout>
+              <Instructions />
+            </Layout>
+          }
+        />
+
+        <Route
+          path="/registration"
+          element={
+            <Layout>
+              <Registration />
+            </Layout>
+          }
+        />
+
+        <Route
+          path="/login"
+          element={
+            <Layout>
+              <Login />
+            </Layout>
+          }
+        />
+
+        <Route
+          path="/sign"
+          element={
+            <Layout>
+              <Sign />
+            </Layout>
+          }
+        />
+
+        {/* Booking pages */}
+        <Route
+          path="/bookingconfirmation"
+          element={
+            <Layout>
+              <BookingConfirmation />
+            </Layout>
+          }
+        />
+
+        <Route
+          path="/ticketstub"
+          element={
+            <Layout>
+              <TicketStub />
+            </Layout>
+          }
+        />
+
+        <Route
+          path="/paymentpanel"
+          element={
+            <Layout>
+              <PaymentPanel />
+            </Layout>
+          }
+        />
+
+        <Route
+          path="/my-tickets"
+          element={
+            <Layout>
+              <MyTickets />
+            </Layout>
+          }
+        />
+
+        {/* Other pages */}
+        <Route
+          path="/promoters"
+          element={
+            <Layout>
+              <OrganizersPage />
+            </Layout>
+          }
+        />
+
+        <Route
+          path="/buy-tickets"
+          element={
+            <Layout>
+              <BuyTicketsPage />
+            </Layout>
+          }
+        />
+
+        <Route
+          path="/sell-ticket"
+          element={
+            <Layout>
+              <SellTicketPage />
+            </Layout>
+          }
+        />
+
+        <Route
+          path="/faq"
+          element={
+            <Layout>
+              <FaqPage />
+            </Layout>
+          }
+        />
+
+        <Route
+          path="/vendors"
+          element={
+            <Layout>
+              <VendorsPage />
+            </Layout>
+          }
+        />
+
+        {/* Event discovery pages */}
+        <Route
+          path="/locationpicker"
+          element={
+            <Layout>
+              <LocationPicker />
+            </Layout>
+          }
+        />
+
+        <Route
+          path="/herosection"
+          element={
+            <Layout>
+              <HeroSection />
+            </Layout>
+          }
+        />
+
+        {/* Calendar now receives actual events */}
+        <Route
+          path="/eventcalendar"
+          element={
+            <Layout>
+              <CalendarPage />
+            </Layout>
+          }
+        />
+
+        <Route
+          path="/eventlocationpin"
+          element={
+            <Layout>
+              <EventLocationPin />
+            </Layout>
+          }
+        />
+
+        {/* Catch unknown routes */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

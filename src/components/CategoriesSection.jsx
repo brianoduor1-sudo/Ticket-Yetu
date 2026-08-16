@@ -10,10 +10,10 @@ import { useState } from "react";
 // guaranteed to match an actual event.category value returned by
 // the API, not made-up league names.
 //
-// A group either has children or doesn't. If it has children,
-// clicking the group just opens row 2 and waits for a specific pick.
-// If it has NO children, the group name itself IS a real filter
-// value, so clicking it filters immediately, same as "All".
+// Every group button filters immediately on click, whether or not
+// it has children — clicking "Sports" shows all Sports events right
+// away. If it has children (e.g. Football, Rugby), those also show
+// up underneath so the user can narrow further from there.
 // ============================================================
 
 export default function CategoriesSection({ groups = {}, onSelect }) {
@@ -27,10 +27,10 @@ export default function CategoriesSection({ groups = {}, onSelect }) {
     setActiveGroup(group);
     setActiveCategory(null);
 
-    const children = groups[group] ?? [];
-    if (group === "All" || children.length === 0) {
-      onSelect?.(group);
-    }
+    // Always notify the parent immediately — clicking a group (e.g.
+    // "Sports") should filter to that group right away, even if it
+    // also has children (Football/Rugby) shown below for narrowing.
+    onSelect?.(group);
   };
 
   const handleCategoryClick = (category) => {

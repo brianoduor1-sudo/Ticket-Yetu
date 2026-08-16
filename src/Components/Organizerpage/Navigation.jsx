@@ -26,16 +26,18 @@ function Navigation() {
       </div>
 
       <div className="nav-links">
-        <Link to="/events/">Events</Link>
+        <Link to="/events">Events</Link>
         <Link to="/blog">Blog</Link>
-        <Link to="/info">info</Link>
-        <Link to="/instructions">instructions</Link>
-        <Link to="registration">registration</Link>
+        <Link to="/eventcalendar">Calendar</Link>
+        <Link to="/info">Info</Link>
+        <Link to="/instructions">Instructions</Link>
+        <Link to="/registration">Registration</Link>
         <Link to="/my-tickets">My Tickets</Link>
       </div>
 
       <div className="nav-actions">
         <Link to="/help">Help</Link>
+
         <NotificationBell />
 
         {loggedInUser ? (
@@ -43,6 +45,7 @@ function Navigation() {
             <span className="welcome-text">
               Welcome, {loggedInUser.contactName}
             </span>
+
             <button className="btn" onClick={handleLogout}>
               Logout
             </button>
@@ -50,7 +53,11 @@ function Navigation() {
         ) : (
           <>
             <Link to="/login">↪ Login</Link>
-            <button className="btn" onClick={() => navigate("/signup")}>
+
+            <button
+              className="btn"
+              onClick={() => navigate("/signup")}
+            >
               Sign Up
             </button>
           </>
