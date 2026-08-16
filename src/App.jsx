@@ -27,6 +27,9 @@ import Footer from "./Components/Organizerpage/Footer.jsx";
 import { BookingConfirmation } from "./Components/booking/BookingConfirmation.jsx";
 import { TicketStub } from "./Components/booking/TicketStub.jsx";
 import { PaymentPanel } from "./Components/booking/PaymentPanel.jsx";
+import { BookingForm } from "./Components/booking/BookingForm.jsx";
+import { storage } from "./data/storage.js";
+import { eventService } from "./Components/services/eventService.js";
 import MyTickets from "./Components/tickets/MyTickets.jsx";
 
 // Event browsing/discovery components — NOTE: lowercase "components" folder,
@@ -518,6 +521,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout><HomePage /></Layout>} />
+        <Route path="/test-booking" element={<Layout><TestBooking /></Layout>} />
         <Route path="/events" element={<Layout><EventsPage /></Layout>} />
         <Route path="/events/sports" element={<Layout><SportsPage /></Layout>} />
         <Route path="/events/entertainment" element={<Layout><EntertainmentPage /></Layout>} />

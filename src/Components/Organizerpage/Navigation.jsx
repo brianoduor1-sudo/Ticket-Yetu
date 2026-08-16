@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "./Navigation.css"; 
+import { NotificationBell } from "../Notifications/NotificationBell.jsx";
+import "./Navigation.css";
 
 function Navigation() {
   const navigate = useNavigate();
@@ -28,13 +29,14 @@ function Navigation() {
         <Link to="/events/">Events</Link>
         <Link to="/blog">Blog</Link>
         <Link to="/info">info</Link>
-        <Link to="/organizer">Organizers</Link>
         <Link to="/instructions">instructions</Link>
         <Link to="registration">registration</Link>
+        <Link to="/my-tickets">My Tickets</Link>
       </div>
 
       <div className="nav-actions">
         <Link to="/help">Help</Link>
+        <NotificationBell />
 
         {loggedInUser ? (
           <>

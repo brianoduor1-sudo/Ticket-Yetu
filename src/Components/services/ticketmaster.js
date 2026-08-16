@@ -1,88 +1,33 @@
-const API_KEY = import.meta.env.VITE_TICKETMASTER_API_KEY;
+import { mockEvents } from "./mockEvents.js";
 
-const BASE_URL = "https://app.ticketmaster.com/discovery/v2";
-
-// East African country codes
-const EAST_AFRICA_COUNTRIES = ["KE", "UG"];
-
-async function fetchEventsForCountry(classification, countryCode) {
-  const response = await fetch(
-    `${BASE_URL}/events.json?classificationName=${classification}&countryCode=${countryCode}&size=20&apikey=${API_KEY}`,
-  );
-
-  if (!response.ok) {
-    throw new Error(`HTTP ${response.status}`);
-  }
-
-  const data = await response.json();
-  return data._embedded?.events || [];
-}
-
-async function fetchEastAfricaEvents(classification) {
-  const results = await Promise.allSettled(
-    EAST_AFRICA_COUNTRIES.map((code) =>
-      fetchEventsForCountry(classification, code),
-    ),
-  );
-
-  // combine successful results from all countries, ignore any that failed
-  const events = results
-    .filter((r) => r.status === "fulfilled")
-    .flatMap((r) => r.value);
-
-  return events;
+// Simulates network latency so loading states are still visible/testable.
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 export async function fetchSportsEvents() {
-  const events = await fetchEastAfricaEvents("sports");
-  console.log("Sports API response (East Africa):", events);
-  return events;
+  await delay(400);
+  return mockEvents.filter((e) => e.classifications[0].segment.name === "Sports");
 }
 
 export async function fetchEntertainmentEvents() {
-  const events = await fetchEastAfricaEvents("music");
-  console.log("Entertainment API response (East Africa):", events);
-  return events;
+  await delay(400);
+  return mockEvents.filter((e) => e.classifications[0].segment.name === "Music");
 }
 
 export async function fetchEventById(id) {
-  const response = await fetch(
-    `${BASE_URL}/events/${id}.json?apikey=${API_KEY}`,
-  );
-
-  if (!response.ok) {
-    throw new Error(`HTTP ${response.status}`);
-  }
-
-  return await response.json();
-}
-
-// ================= SEARCH (keyword-based, same East Africa loop) =================
-
-async function fetchEventsForCountryByKeyword(keyword, countryCode) {
-  const response = await fetch(
-    `${BASE_URL}/events.json?keyword=${encodeURIComponent(keyword)}&countryCode=${countryCode}&size=20&apikey=${API_KEY}`,
-  );
-
-  if (!response.ok) {
-    throw new Error(`HTTP ${response.status}`);
-  }
-
-  const data = await response.json();
-  return data._embedded?.events || [];
+  await delay(300);
+  const event = mockEvents.find((e) => e.id === id);
+  if (!event) throw new Error("Event not found");
+  return event;
 }
 
 export async function fetchEventsByKeyword(keyword) {
-  const results = await Promise.allSettled(
-    EAST_AFRICA_COUNTRIES.map((code) =>
-      fetchEventsForCountryByKeyword(keyword, code),
-    ),
+  await delay(400);
+  const lower = keyword.toLowerCase();
+  return mockEvents.filter(
+    (e) =>
+      e.name.toLowerCase().includes(lower) ||
+      e.classifications[0]?.genre?.name?.toLowerCase().includes(lower)
   );
-
-  const events = results
-    .filter((r) => r.status === "fulfilled")
-    .flatMap((r) => r.value);
-
-  console.log("Search API response:", events);
-  return events;
 }
