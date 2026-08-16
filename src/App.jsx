@@ -973,7 +973,7 @@ export default function App() {
         />
 
         <Route
-          path="/sign"
+          path="/signup"
           element={
             <Layout>
               <Sign />
