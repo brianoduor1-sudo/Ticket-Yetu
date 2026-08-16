@@ -273,4 +273,4 @@ A project license has not yet been selected. The team will confirm the appropria
 
 ## ✅ Final Note
 
-TicketYetu (this module) is a fully self-contained frontend demo: no API key, no backend, no internet dependency once loaded, yet still demonstrates a complete, realistic booking flow end-to-end. This gave the team hands-on experience simulating backend behavior client-side — a useful skill on its own while keeping the module deployable and demoable anywhere, instantly.
+TicketYetu (this module) is a fully self-contained frontend demo: no API key, no backend, no internet dependency once loaded, yet still demonstrates a complete, realistic booking flow end-to-end. This gave the team hands-on experience simulating backend behavior client-side  a useful skill on its own while keeping the module deployable and demoable anywhere, instantly.
