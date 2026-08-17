@@ -14,7 +14,27 @@ export default function HomePage() {
         color: "white",
       }}
     >
-      <h1 style={{ fontSize: "4rem", marginBottom: "16px" }}>🎟️ Ticket Yetu</h1>
+      <h1
+        style={{
+          fontSize: "4rem",
+          marginBottom: "16px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "15px",
+        }}
+      >
+        <img
+          src="/logo.png"
+          alt="Ticket Yetu Logo"
+          style={{
+            width: "80px",
+            height: "80px",
+            objectFit: "contain",
+          }}
+        />
+        Ticket Yetu
+      </h1>
 
       <p
         style={{

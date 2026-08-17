@@ -92,53 +92,10 @@ function HomePage() {
         color: "white",
       }}
     >
-      <div
-        style={{
-          position: "absolute",
-          top: "18%",
-          left: "12%",
-          fontSize: "70px",
-          opacity: 0.08,
-        }}
-      >
-        ⚽
-      </div>
-
-      <div
-        style={{
-          position: "absolute",
-          top: "25%",
-          right: "12%",
-          fontSize: "70px",
-          opacity: 0.08,
-        }}
-      >
-        🎵
-      </div>
-
-      <div
-        style={{
-          position: "absolute",
-          bottom: "15%",
-          left: "20%",
-          fontSize: "60px",
-          opacity: 0.07,
-        }}
-      >
-        🏆
-      </div>
-
-      <div
-        style={{
-          position: "absolute",
-          bottom: "18%",
-          right: "20%",
-          fontSize: "60px",
-          opacity: 0.07,
-        }}
-      >
-        🎤
-      </div>
+      <div style={{ position: "absolute", top: "18%", left: "12%", fontSize: "70px", opacity: 0.08 }}>⚽</div>
+      <div style={{ position: "absolute", top: "25%", right: "12%", fontSize: "70px", opacity: 0.08 }}>🎵</div>
+      <div style={{ position: "absolute", bottom: "15%", left: "20%", fontSize: "60px", opacity: 0.07 }}>🏆</div>
+      <div style={{ position: "absolute", bottom: "18%", right: "20%", fontSize: "60px", opacity: 0.07 }}>🎤</div>
 
       <h1
         style={{
@@ -327,11 +284,7 @@ function EventsPage() {
   return (
     <div>
       <HeroSection onSearch={handleSearch} />
-
-      <CategoriesSection
-        groups={categoryGroups}
-        onSelect={handleCategorySelect}
-      />
+      <CategoriesSection groups={categoryGroups} onSelect={handleCategorySelect} />
 
       {/* Search results */}
       {showSearchResults && (
@@ -561,15 +514,7 @@ function OrganizersPage() {
         textAlign: "center",
       }}
     >
-      <h1
-        style={{
-          fontSize: "3rem",
-          marginBottom: "15px",
-        }}
-      >
-        🎤 Meet Our Organizers
-      </h1>
-
+      <h1 style={{ fontSize: "3rem", marginBottom: "15px" }}>🎤 Meet Our Organizers</h1>
       <p
         style={{
           color: "#cbd5e1",
@@ -603,23 +548,8 @@ function OrganizersPage() {
               border: "1px solid #334155",
             }}
           >
-            <h2
-              style={{
-                fontSize: "1.4rem",
-                marginBottom: "10px",
-              }}
-            >
-              {org.name}
-            </h2>
-
-            <p
-              style={{
-                color: "#cbd5e1",
-                lineHeight: 1.6,
-              }}
-            >
-              {org.desc}
-            </p>
+            <h2 style={{ fontSize: "1.4rem", marginBottom: "10px" }}>{org.name}</h2>
+            <p style={{ color: "#cbd5e1", lineHeight: 1.6 }}>{org.desc}</p>
           </div>
         ))}
       </div>
@@ -643,23 +573,8 @@ function BuyTicketsPage() {
         textAlign: "center",
       }}
     >
-      <h1
-        style={{
-          fontSize: "3rem",
-          marginBottom: "15px",
-        }}
-      >
-        🎫 Buy Tickets
-      </h1>
-
-      <p
-        style={{
-          color: "#cbd5e1",
-          fontSize: "1.1rem",
-          maxWidth: "600px",
-          margin: "0 auto",
-        }}
-      >
+      <h1 style={{ fontSize: "3rem", marginBottom: "15px" }}>🎫 Buy Tickets</h1>
+      <p style={{ color: "#cbd5e1", fontSize: "1.1rem", maxWidth: "600px", margin: "0 auto" }}>
         Browse our upcoming sports and entertainment events, then secure your
         spot in just a few clicks.
       </p>
@@ -683,23 +598,8 @@ function SellTicketPage() {
         textAlign: "center",
       }}
     >
-      <h1
-        style={{
-          fontSize: "3rem",
-          marginBottom: "15px",
-        }}
-      >
-        💵 Sell Your Ticket
-      </h1>
-
-      <p
-        style={{
-          color: "#cbd5e1",
-          fontSize: "1.1rem",
-          maxWidth: "600px",
-          margin: "0 auto",
-        }}
-      >
+      <h1 style={{ fontSize: "3rem", marginBottom: "15px" }}>💵 Sell Your Ticket</h1>
+      <p style={{ color: "#cbd5e1", fontSize: "1.1rem", maxWidth: "600px", margin: "0 auto" }}>
         Can't make it to an event anymore? List your ticket here and pass it
         on to someone who can.
       </p>
@@ -738,22 +638,8 @@ function FaqPage() {
         textAlign: "center",
       }}
     >
-      <h1
-        style={{
-          fontSize: "3rem",
-          marginBottom: "30px",
-        }}
-      >
-        ❓ Frequently Asked Questions
-      </h1>
-
-      <div
-        style={{
-          maxWidth: "700px",
-          margin: "0 auto",
-          textAlign: "left",
-        }}
-      >
+      <h1 style={{ fontSize: "3rem", marginBottom: "30px" }}>❓ Frequently Asked Questions</h1>
+      <div style={{ maxWidth: "700px", margin: "0 auto", textAlign: "left" }}>
         {faqs.map((item) => (
           <div
             key={item.q}
@@ -804,23 +690,8 @@ function VendorsPage() {
         textAlign: "center",
       }}
     >
-      <h1
-        style={{
-          fontSize: "3rem",
-          marginBottom: "15px",
-        }}
-      >
-        🛍️ Vendors
-      </h1>
-
-      <p
-        style={{
-          color: "#cbd5e1",
-          fontSize: "1.1rem",
-          maxWidth: "600px",
-          margin: "0 auto",
-        }}
-      >
+      <h1 style={{ fontSize: "3rem", marginBottom: "15px" }}>🛍️ Vendors</h1>
+      <p style={{ color: "#cbd5e1", fontSize: "1.1rem", maxWidth: "600px", margin: "0 auto" }}>
         Vendor partnerships and marketplace listings are coming soon. Check
         back for updates.
       </p>
@@ -847,18 +718,8 @@ function NotFound() {
         color: "white",
       }}
     >
-      <h1
-        style={{
-          fontSize: "3rem",
-          marginBottom: "12px",
-        }}
-      >
-        404
-      </h1>
-
-      <p style={{ color: "#cbd5e1" }}>
-        The page you are looking for does not exist.
-      </p>
+      <h1 style={{ fontSize: "3rem", marginBottom: "12px" }}>404</h1>
+      <p style={{ color: "#cbd5e1" }}>The page you are looking for does not exist.</p>
     </div>
   );
 }
@@ -871,236 +732,31 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Main pages */}
-        <Route
-          path="/"
-          element={
-            <Layout>
-              <HomePage />
-            </Layout>
-          }
-        />
-
-        <Route
-          path="/events"
-          element={
-            <Layout>
-              <EventsPage />
-            </Layout>
-          }
-        />
-
-        <Route
-          path="/events/sports"
-          element={
-            <Layout>
-              <SportsPage />
-            </Layout>
-          }
-        />
-
-        <Route
-          path="/events/entertainment"
-          element={
-            <Layout>
-              <EntertainmentPage />
-            </Layout>
-          }
-        />
-
-        <Route
-          path="/events/:id"
-          element={
-            <Layout>
-              <EventDetailsPage />
-            </Layout>
-          }
-        />
-
-        {/* Organizer pages */}
-        <Route
-          path="/blog"
-          element={
-            <Layout>
-              <Blog />
-            </Layout>
-          }
-        />
-
-        <Route
-          path="/help"
-          element={
-            <Layout>
-              <Help />
-            </Layout>
-          }
-        />
-
-        <Route
-          path="/info"
-          element={
-            <Layout>
-              <Info />
-            </Layout>
-          }
-        />
-
-        <Route
-          path="/instructions"
-          element={
-            <Layout>
-              <Instructions />
-            </Layout>
-          }
-        />
-
-        <Route
-          path="/registration"
-          element={
-            <Layout>
-              <Registration />
-            </Layout>
-          }
-        />
-
-        <Route
-          path="/login"
-          element={
-            <Layout>
-              <Login />
-            </Layout>
-          }
-        />
-
-        <Route
-          path="/signup"
-          element={
-            <Layout>
-              <Sign />
-            </Layout>
-          }
-        />
-
-        {/* Booking pages */}
-        <Route
-          path="/bookingconfirmation"
-          element={
-            <Layout>
-              <BookingConfirmation />
-            </Layout>
-          }
-        />
-
-        <Route
-          path="/ticketstub"
-          element={
-            <Layout>
-              <TicketStub />
-            </Layout>
-          }
-        />
-
-        <Route
-          path="/paymentpanel"
-          element={
-            <Layout>
-              <PaymentPanel />
-            </Layout>
-          }
-        />
-
-        <Route
-          path="/my-tickets"
-          element={
-            <Layout>
-              <MyTickets />
-            </Layout>
-          }
-        />
-
-        {/* Other pages */}
-        <Route
-          path="/promoters"
-          element={
-            <Layout>
-              <OrganizersPage />
-            </Layout>
-          }
-        />
-
-        <Route
-          path="/buy-tickets"
-          element={
-            <Layout>
-              <BuyTicketsPage />
-            </Layout>
-          }
-        />
-
-        <Route
-          path="/sell-ticket"
-          element={
-            <Layout>
-              <SellTicketPage />
-            </Layout>
-          }
-        />
-
-        <Route
-          path="/faq"
-          element={
-            <Layout>
-              <FaqPage />
-            </Layout>
-          }
-        />
-
-        <Route
-          path="/vendors"
-          element={
-            <Layout>
-              <VendorsPage />
-            </Layout>
-          }
-        />
-
-        {/* Event discovery pages */}
-        <Route
-          path="/locationpicker"
-          element={
-            <Layout>
-              <LocationPicker />
-            </Layout>
-          }
-        />
-
-        <Route
-          path="/herosection"
-          element={
-            <Layout>
-              <HeroSection />
-            </Layout>
-          }
-        />
-
-        {/* Calendar now receives actual events */}
-        <Route
-          path="/eventcalendar"
-          element={
-            <Layout>
-              <CalendarPage />
-            </Layout>
-          }
-        />
-
-        <Route
-          path="/eventlocationpin"
-          element={
-            <Layout>
-              <EventLocationPin />
-            </Layout>
-          }
-        />
+        <Route path="/" element={<Layout><HomePage /></Layout>} />
+        <Route path="/events" element={<Layout><EventsPage /></Layout>} />
+        <Route path="/events/sports" element={<Layout><SportsPage /></Layout>} />
+        <Route path="/events/entertainment" element={<Layout><EntertainmentPage /></Layout>} />
+        <Route path="/events/:id" element={<Layout><EventDetailsPage /></Layout>} />
+        <Route path="/blog" element={<Layout><Blog /></Layout>} />
+        <Route path="/help" element={<Layout><Help /></Layout>} />
+        <Route path="/info" element={<Layout><Info /></Layout>} />
+        <Route path="/instructions" element={<Layout><Instructions /></Layout>} />
+        <Route path="/registration" element={<Layout><Registration /></Layout>} />
+        <Route path="/login" element={<Layout><Login /></Layout>} />
+        <Route path="/sign" element={<Layout><Sign /></Layout>} />
+        <Route path="/bookingconfirmation" element={<Layout><BookingConfirmation /></Layout>} />
+        <Route path="/ticketstub" element={<Layout><TicketStub /></Layout>} />
+        <Route path="/my-tickets" element={<Layout><MyTickets /></Layout>} />
+        <Route path="/promoters" element={<Layout><OrganizersPage /></Layout>} />
+        <Route path="/buy-tickets" element={<Layout><BuyTicketsPage /></Layout>} />
+        <Route path="/sell-ticket" element={<Layout><SellTicketPage /></Layout>} />
+        <Route path="/faq" element={<Layout><FaqPage /></Layout>} />
+        <Route path="/vendors" element={<Layout><VendorsPage /></Layout>} />
+        <Route path="/paymentpanel" element={<Layout><PaymentPanel /></Layout>} />
+        <Route path="/locationpicker" element={<Layout><LocationPicker /></Layout>} />
+        <Route path="/herosection" element={<Layout><HeroSection /></Layout>} />
+        <Route path="/eventcalendar" element={<Layout><EventCalendar events={[]} /></Layout>} />
+        <Route path="/eventlocationpin" element={<Layout><EventLocationPin /></Layout>} />
 
         {/* Catch unknown routes */}
         <Route path="*" element={<NotFound />} />
