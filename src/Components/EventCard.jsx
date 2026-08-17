@@ -1,120 +1,91 @@
 import { Link } from "react-router-dom";
 
-function EventCard({ event }) {
+export default function EventCard({ event }) {
   const image =
-    event?.images?.find(
-      (img) => img.width >= 640
-    )?.url ||
-    event?.images?.[0]?.url;
+    event.images?.find((img) => img.ratio === "16_9")?.url ||
+    event.images?.[0]?.url;
 
-  const venue =
-    event?._embedded?.venues?.[0];
-
-  const category =
-    event?.classifications?.[0]
-      ?.segment?.name ||
-    "Event";
-
-  const date =
-    event?.dates?.start
-      ?.localDate ||
-    "Date TBA";
-
-  const time =
-    event?.dates?.start
-      ?.localTime ||
-    "TBA";
-
-  const location = [
-    venue?.name,
-    venue?.city?.name,
-  ]
-    .filter(Boolean)
-    .join(", ");
-
-  const price =
-    event?.priceRanges?.[0];
-
-  const ticketStatus =
-    event?.dates?.status?.code ===
-    "onsale"
-      ? "Tickets Available"
-      : "Check availability";
+  const date = event.dates?.start?.localDate;
+  const time = event.dates?.start?.localTime;
+  const venue = event._embedded?.venues?.[0]?.name;
+  const city = event._embedded?.venues?.[0]?.city?.name;
 
   return (
-    <article className="card">
-
-      {image ? (
+    <div
+      style={{
+        background: "#0f172a",
+        borderRadius: "18px",
+        overflow: "hidden",
+        border: "1px solid #334155",
+        boxShadow: "0 10px 25px rgba(0,0,0,0.35)",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      {image && (
         <img
           src={image}
-          alt={
-            event?.name ||
-            "Event"
-          }
-          className="card-image"
+          alt={event.name}
+          style={{
+            width: "100%",
+            height: "180px",
+            objectFit: "cover",
+            display: "block",
+          }}
         />
-      ) : (
-        <div className="card-image">
-          Event Image
-        </div>
       )}
 
-
-      <div className="card-body">
-
-        <span className="badge">
-          {category}
+      <div style={{ padding: "16px" }}>
+        <span
+          style={{
+            fontSize: "12px",
+            color: "#a78bfa",
+            textTransform: "uppercase",
+            fontWeight: "700",
+          }}
+        >
+          {event.classifications?.[0]?.segment?.name || "Event"}
         </span>
 
-
-        <h3>
-          {event?.name ||
-            "Event Title"}
+        <h3
+          style={{
+            color: "white",
+            fontSize: "18px",
+            margin: "8px 0 12px",
+            lineHeight: 1.4,
+          }}
+        >
+          {event.name}
         </h3>
 
-
-        <p>
-          📅 {date}
+        <p style={{ color: "#cbd5e1", fontSize: "14px", margin: "6px 0" }}>
+          📅 {date || "Date TBA"}
         </p>
 
-
-        <p>
-          ⏰ {time}
+        <p style={{ color: "#cbd5e1", fontSize: "14px", margin: "6px 0" }}>
+          ⏰ {time || "Time TBA"}
         </p>
 
-
-        <p>
-          📍{" "}
-          {location ||
-            "Location TBA"}
+        <p style={{ color: "#cbd5e1", fontSize: "14px", margin: "6px 0 14px" }}>
+          📍 {[venue, city].filter(Boolean).join(", ")}
         </p>
-
-
-        <p>
-          💰{" "}
-          {price
-            ? `KES ${price.min} - ${price.max}`
-            : "Price not available"}
-        </p>
-
-
-        <p>
-          🎟️{" "}
-          {ticketStatus}
-        </p>
-
 
         <Link
-          to={`/events/${event?.id}`}
-          className="btn"
+          to={`/events/${event.id}`}
+          style={{
+            display: "inline-block",
+            padding: "10px 16px",
+            background: "linear-gradient(135deg, #7c3aed, #6d28d9)",
+            color: "white",
+            borderRadius: "10px",
+            textDecoration: "none",
+            fontSize: "14px",
+            fontWeight: "700",
+          }}
         >
           View Event
         </Link>
-
       </div>
-
-    </article>
+    </div>
   );
 }
-
-export default EventCard;

@@ -2,7 +2,7 @@
   background: linear-gradient(135deg, #6d28d9, #7c3aed);
   padding: 60px 40px;
   border-radius: 12px;
-  color: white;
+  color: rgb(219, 66, 66);
   transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
 }
 

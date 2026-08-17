@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useNotifications } from '../../hooks/useNotifications';
-
+import { useNotifications } from '../hooks/useNotifications';
 const TYPE_ICON = {
   booking_confirmed: '🎟️',
   event_updated: '✏️',

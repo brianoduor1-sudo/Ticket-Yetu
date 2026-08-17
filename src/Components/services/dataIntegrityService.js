@@ -5,7 +5,7 @@
 // This service can detect drift (and fix it) rather than trusting the
 // stored number blindly.
 
-import { storage } from '../data/storage';
+import { storage } from '../../data/storage';
 
 export const dataIntegrityService = {
   check() {

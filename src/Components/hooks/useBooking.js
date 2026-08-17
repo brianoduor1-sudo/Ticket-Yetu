@@ -6,7 +6,7 @@ import { useNotifications } from './useNotifications';
 // Flow: 'details' -> (free? straight to booking) or (paid? 'checkout' -> booking)
 export function useBooking(event) {
   const { refresh } = useEvents();
-  const { addNotification } = useNotifications();
+  const { refresh: refreshNotifications } = useNotifications();
   const [quantity, setQuantity] = useState(1);
   const [attendeeName, setAttendeeName] = useState('');
   const [attendeeEmail, setAttendeeEmail] = useState('');
@@ -41,16 +41,12 @@ export function useBooking(event) {
 
     if (outcome.success) {
       refresh(); // pick up updated quantityBooked
-      addNotification({
-        type: 'booking-confirmed',
-        title: 'Booking Confirmed!',
-        message: `Reserved ${quantity} ticket(s) for ${event.title}`,
-        eventId: event.id,
-      });
+      refreshNotifications(); // pick up the notification bookingService already created
     }
 
     return outcome;
   }
+
   function handlePaymentSuccess({ method, reference }) {
     finalize({ paymentMethod: method, paymentReference: reference });
   }

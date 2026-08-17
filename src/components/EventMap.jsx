@@ -1,6 +1,8 @@
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+// NOTE: leaflet/dist/leaflet.css is imported once globally in main.jsx,
+// NOT here. Importing it per-component made it load unreliably and
+// caused the marker icon to render huge/unstyled. Don't re-add it here.
 
 // Same icon fix as LocationPicker, needed anywhere we show a map pin.
 delete L.Icon.Default.prototype._getIconUrl;
@@ -9,6 +11,13 @@ L.Icon.Default.mergeOptions({
     "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
   iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
   shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+  // Force the correct pixel size directly instead of relying on
+  // leaflet.css loading correctly — this guarantees a normal-sized
+  // pin no matter what CSS load order happens.
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
 });
 
 // Event Details page map. Shows a pin at the event's saved location plus

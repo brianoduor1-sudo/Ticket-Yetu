@@ -1,44 +1,19 @@
+import { useState, useEffect } from "react";
 import EventCard from "./EventCard";
-
-const sportsEvents = [
-  {
-    id: "kpl-001",
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQrQ3KIITc4Z04TX_calNmA0EeHQPbBkpcHfHo5iEWXXg&s=10",
-    name: "Gor Mahia vs AFC Leopards",
-    date: "2026-09-20",
-    time: "15:00",
-    location: "Nyayo Stadium, Nairobi",
-    category: "FKF Premier League",
-    price: 500,
-    availableTickets: 1200,
-  },
-  {
-    id: "rugby-003",
-    image: "https://scrummage.co.ke/2023/09/12/kenya-7s-squad-named/",
-    name: "Kenya Rugby Sevens Invitational",
-    date: "2026-09-27",
-    time: "10:00",
-    location: "RFUEA Grounds, Nairobi",
-    category: "Rugby Sevens",
-    price: 800,
-    availableTickets: 2500,
-  },
-  {
-    id: "basket-004",
-    image:
-      "https://www.google.com/imgres?q=%22Nairobi%20City%20Thunder%20vs%20Ulinzi%20Warriors%22&imgurl=https%3A%2F%2Flookaside.fbsbx.com%2Flookaside%2Fcrawler%2Fmedia%2F%3Fmedia_id%3D1587196855982302&imgrefurl=https%3A%2F%2Fwww.facebook.com%2F254citythunder%2Fphotos%2Fnairobi-city-thunder-vs-ulinzi-warriorspreseason-friendly-games-are-about-rhythm%2F1587196855982302%2F&docid=iaCJHFM_IY1zDM&tbnid=9O-qrOyPOM2LAM&vet=12ahUKEwj2y8vH9ZyWAxVD1AIHHTYiIy4QnPAOegQIQhAA..i&w=1080&h=1080&hcb=2&ved=2ahUKEwj2y8vH9ZyWAxVD1AIHHTYiIy4QnPAOegQIQhAA",
-    name: "Nairobi City Thunder vs Ulinzi Warriors",
-    date: "2026-09-29",
-    time: "18:00",
-    location: "Kasarani Indoor Arena",
-    category: "Basketball",
-    price: 400,
-    availableTickets: 700,
-  },
-];
+import { fetchSportsEvents } from "./services/ticketmaster";
 
 export default function SportsPage() {
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchSportsEvents()
+      .then(setEvents)
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <div
       style={{
@@ -48,9 +23,31 @@ export default function SportsPage() {
         minHeight: "100vh",
       }}
     >
-      <h1 style={{ color: "white", textAlign: "center", fontSize: "3rem" }}>
+      <h1
+        style={{
+          color: "white",
+          textAlign: "center",
+          fontSize: "3rem",
+          fontWeight: "800",
+          marginBottom: "12px",
+        }}
+      >
         🏆 Sports Events
       </h1>
+
+      <p
+        style={{
+          color: "#cbd5e1",
+          textAlign: "center",
+          maxWidth: "720px",
+          margin: "0 auto 32px",
+          fontSize: "1.05rem",
+          lineHeight: 1.7,
+        }}
+      >
+        Explore upcoming football matches, rugby tournaments, basketball games,
+        and other exciting sporting events happening across Kenya.
+      </p>
 
       <div
         style={{
@@ -58,12 +55,47 @@ export default function SportsPage() {
           gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
           gap: "28px",
           maxWidth: "1280px",
-          margin: "32px auto 0",
+          margin: "0 auto",
         }}
       >
-        {sportsEvents.map((event) => (
-          <EventCard key={event.id} event={event} />
-        ))}
+        {loading ? (
+          <p
+            style={{
+              color: "#cbd5e1",
+              gridColumn: "1 / -1",
+              textAlign: "center",
+            }}
+          >
+            Loading events...
+          </p>
+        ) : error ? (
+          <p
+            style={{
+              color: "#fca5a5",
+              gridColumn: "1 / -1",
+              textAlign: "center",
+            }}
+          >
+            Failed to load events: {error}
+          </p>
+        ) : events.length > 0 ? (
+          events.map((event) => <EventCard key={event.id} event={event} />)
+        ) : (
+          <div
+            style={{
+              gridColumn: "1 / -1",
+              textAlign: "center",
+              color: "#e2e8f0",
+              padding: "48px 16px",
+              border: "1px dashed #475569",
+              borderRadius: "24px",
+              background: "rgba(15, 23, 42, 0.55)",
+            }}
+          >
+            <h3 style={{ marginBottom: "8px" }}>No sports events available</h3>
+            <p>Check back later for upcoming fixtures and tournaments.</p>
+          </div>
+        )}
       </div>
     </div>
   );
