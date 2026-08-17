@@ -213,7 +213,6 @@ Open the local URL shown in your terminal (typically `http://localhost:5173`).
 
 ### Completed
 * [x] Homepage Hero Section, search, and dynamic category filtering
-
 * [x] Full booking flow: quantity → checkout → simulated payment → confirmation
 * [x] Ticket inventory tracking with real enforcement (can't overbook)
 * [x] In-app notifications on booking events
@@ -224,8 +223,8 @@ Open the local URL shown in your terminal (typically `http://localhost:5173`).
 * [ ] Fix and wire up `DataManagementPage` (export/import/reset)
 * [ ] Repo cleanup (`components`/`Components`, `Data`/`data`, dead `Api/` folder)
 * [ ] Reconnect to a live event API (originally Ticketmaster) once outside this frontend-only module's scope
-* [] Newsletter signup 
-* [] Event Calendar with real mock-event integration
+* [ ]Newsletter signup 
+* [ ] Event Calendar with real mock-event integration
 
 ### Planned (beyond this module)
 * [ ] Real backend (Firebase or similar) replacing `localStorage`
