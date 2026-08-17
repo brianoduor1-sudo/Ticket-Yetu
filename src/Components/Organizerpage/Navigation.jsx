@@ -21,7 +21,7 @@ function Navigation() {
   return (
     <nav className="navigation">
       <div className="logo-section">
-        <img src="/logo.png" alt="TicketYetu logo" />
+        <img src="/Ticket-Yetu%20Logo.jpeg" alt="TicketYetu logo" />
         <h1>TicketYetu</h1>
       </div>
 

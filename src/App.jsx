@@ -621,6 +621,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+<<<<<<< HEAD
         <Route
           path="/"
           element={
@@ -822,6 +823,33 @@ export default function App() {
             </Layout>
           }
         />
+=======
+        <Route path="/" element={<Layout><HomePage /></Layout>} />
+        <Route path="/events" element={<Layout><EventsPage /></Layout>} />
+        <Route path="/events/sports" element={<Layout><SportsPage /></Layout>} />
+        <Route path="/events/entertainment" element={<Layout><EntertainmentPage /></Layout>} />
+        <Route path="/events/:id" element={<Layout><EventDetailsPage /></Layout>} />
+        <Route path="/blog" element={<Layout><Blog /></Layout>} />
+        <Route path="/help" element={<Layout><Help /></Layout>} />
+        <Route path="/info" element={<Layout><Info /></Layout>} />
+        <Route path="/instructions" element={<Layout><Instructions /></Layout>} />
+        <Route path="/registration" element={<Layout><Registration /></Layout>} />
+        <Route path="/login" element={<Layout><Login /></Layout>} />
+        <Route path="/sign" element={<Layout><Sign /></Layout>} />
+        <Route path="/bookingconfirmation" element={<Layout><BookingConfirmation /></Layout>} />
+        <Route path="/ticketstub" element={<Layout><TicketStub /></Layout>} />
+        <Route path="/my-tickets" element={<Layout><MyTickets /></Layout>} />
+        <Route path="/promoters" element={<Layout><OrganizersPage /></Layout>} />
+        <Route path="/buy-tickets" element={<Layout><BuyTicketsPage /></Layout>} />
+        <Route path="/sell-ticket" element={<Layout><SellTicketPage /></Layout>} />
+        <Route path="/faq" element={<Layout><FaqPage /></Layout>} />
+        <Route path="/vendors" element={<Layout><VendorsPage /></Layout>} />
+        <Route path="/paymentpanel" element={<Layout><PaymentPanel /></Layout>} />
+        <Route path="/locationpicker" element={<Layout><LocationPicker /></Layout>} />
+        <Route path="/herosection" element={<Layout><HeroSection /></Layout>} />
+        <Route path="/eventcalendar" element={<Layout><EventCalendar events={[]} /></Layout>} />
+        <Route path="/eventlocationpin" element={<Layout><EventLocationPin /></Layout>} />
+>>>>>>> d09d28df63474dd9c153406248205a132aed73e3
 
         <Route path="*" element={<NotFound />} />
       </Routes>
