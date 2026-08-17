@@ -17,7 +17,7 @@ export const mockEvents = [
   {
     id: "mock-002",
     name: "Kenya Premier League Final",
-    images: [{ url: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800", width: 800 }],
+    images: [{ url: "/kenyanPremierleague.webp", width: 800 }],
     classifications: [{ segment: { name: "Sports" }, genre: { name: "Football" } }],
     dates: { start: { localDate: "2026-09-20", localTime: "15:00:00" }, status: { code: "onsale" } },
     priceRanges: [{ min: 500, max: 2500 }],
@@ -37,7 +37,7 @@ export const mockEvents = [
   {
     id: "mock-004",
     name: "Rugby Sevens Circuit",
-    images: [{ url: "https://images.unsplash.com/photo-1544298621-35a293b09d6f?w=800", width: 800 }],
+    images: [{ url: "/Rugby game.jpg", width: 800 }],
     classifications: [{ segment: { name: "Sports" }, genre: { name: "Rugby" } }],
     dates: { start: { localDate: "2026-10-05", localTime: "10:00:00" }, status: { code: "onsale" } },
     priceRanges: [{ min: 700, max: 3000 }],
