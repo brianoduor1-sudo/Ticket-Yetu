@@ -221,7 +221,6 @@ Open the local URL shown in your terminal (typically `http://localhost:5173`).
 
 ### In Progress
 * [ ] Fix and wire up `DataManagementPage` (export/import/reset)
-* [ ] Repo cleanup (`components`/`Components`, `Data`/`data`, dead `Api/` folder)
 * [ ] Reconnect to a live event API (originally Ticketmaster) once outside this frontend-only module's scope
 * [ ] Newsletter signup 
 * [ ] Event Calendar with real mock-event integration
