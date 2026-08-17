@@ -14,7 +14,9 @@ import "leaflet/dist/leaflet.css"; // Leaflet map styles
 import App from "./App.jsx";
 import { NotificationsProvider } from "./Components/context/NotificationsContext.jsx";
 
-ReactDOM.createRoot(document.getElementById("root")).render(
+ReactDOM.createRoot(
+  document.getElementById("root")
+).render(
   <React.StrictMode>
     <NotificationsProvider>
       <App />
