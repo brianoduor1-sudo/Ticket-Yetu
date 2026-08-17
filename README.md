@@ -213,7 +213,7 @@ Open the local URL shown in your terminal (typically `http://localhost:5173`).
 
 ### Completed
 * [x] Homepage Hero Section, search, and dynamic category filtering
-* [x] Location Picker and Event Maps with Get Directions
+
 * [x] Full booking flow: quantity → checkout → simulated payment → confirmation
 * [x] Ticket inventory tracking with real enforcement (can't overbook)
 * [x] In-app notifications on booking events
@@ -229,6 +229,7 @@ Open the local URL shown in your terminal (typically `http://localhost:5173`).
 
 ### Planned (beyond this module)
 * [ ] Real backend (Firebase or similar) replacing `localStorage`
+* [ ] Location Picker and Event Maps with Get Directions
 * [ ] Real M-Pesa (Daraja API) and card payment integration
 * [ ] Email/SMS notifications
 * [ ] QR code tickets
